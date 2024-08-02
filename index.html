@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Rutinitas Harian</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .time-column {
+            white-space: nowrap;
+            width: 150px;
+        }
+
+        .checkbox-column {
+            text-align: center;
+        }
+
+        .form-check-input {
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">Jadwal Rutinitas Harian</h1>
+        <div class="row mt-5">
+            <div class="col-md-10 offset-md-1">
+                <button class="btn btn-primary mb-3" onclick="addRow()">Tambah Kegiatan</button>
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="time-column">Waktu</th>
+                            <th>Kegiatan</th>
+                            <th>Rincian</th>
+                            <th>Selesai</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-table">
+                        <!-- Jadwal akan diisi di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const schedule = [
+            { time: "04.00 - 06.00", activity: "Course Web development", details: "Coding studio" },
+            { time: "06.00 - 07.00", activity: "Olahraga", details: "Lari/Push Up" },
+            { time: "07.00 - 08.00", activity: "Sarapan", details: "-" },
+            { time: "08.00 - 09.00", activity: "Membaca buku", details: "Buku tentang teknologi, pengembangan diri" },
+            { time: "09.00 - 12.00", activity: "Course Web development", details: "Coding studio" },
+            { time: "12.00 - 13.00", activity: "Istirahat/tidur siang", details: "-" },
+            { time: "13.00 - 15.00", activity: "Belajar bahasa inggris", details: "mencari kosa kata baru, membaca, berbicara" },
+            { time: "15.00 - 16.00", activity: "Break", details: "waktu santai" },
+            { time: "16.00 - 17.00", activity: "Latihan voli", details: "-" },
+            { time: "19.00 - 20.00", activity: "Latihan public speaking", details: "Mendengarkan podcast, menonton video, berlatih speaking dengan teman" },
+            { time: "20.00 - 22.00", activity: "Course web development", details: "Coding studio" },
+        ];
+
+        const scheduleTable = document.getElementById("schedule-table");
+
+        function addRow() {
+            const row = document.createElement("tr");
+
+            const timeCell = document.createElement("td");
+            timeCell.contentEditable = "true";
+            const activityCell = document.createElement("td");
+            activityCell.contentEditable = "true";
+            const detailsCell = document.createElement("td");
+            detailsCell.contentEditable = "true";
+            const doneCell = document.createElement("td");
+            doneCell.classList.add("checkbox-column");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.classList.add("form-check-input");
+            doneCell.appendChild(checkbox);
+
+            const actionsCell = document.createElement("td");
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Hapus";
+            deleteButton.classList.add("btn", "btn-danger", "btn-sm");
+            deleteButton.onclick = function () {
+                row.remove();
+            };
+
+            actionsCell.appendChild(deleteButton);
+
+            row.appendChild(timeCell);
+            row.appendChild(activityCell);
+            row.appendChild(detailsCell);
+            row.appendChild(doneCell);
+            row.appendChild(actionsCell);
+
+            scheduleTable.appendChild(row);
+        }
+
+        function loadSchedule() {
+            schedule.forEach(item => {
+                const row = document.createElement("tr");
+
+                const timeCell = document.createElement("td");
+                timeCell.textContent = item.time;
+                timeCell.classList.add("time-column");
+                timeCell.contentEditable = "true";
+
+                const activityCell = document.createElement("td");
+                activityCell.textContent = item.activity;
+                activityCell.contentEditable = "true";
+
+                const detailsCell = document.createElement("td");
+                detailsCell.textContent = item.details;
+                detailsCell.contentEditable = "true";
+
+                const doneCell = document.createElement("td");
+                doneCell.classList.add("checkbox-column");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.classList.add("form-check-input");
+                doneCell.appendChild(checkbox);
+
+                const actionsCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Hapus";
+                deleteButton.classList.add("btn", "btn-danger", "btn-sm");
+                deleteButton.onclick = function () {
+                    row.remove();
+                };
+
+                actionsCell.appendChild(deleteButton);
+
+                row.appendChild(timeCell);
+                row.appendChild(activityCell);
+                row.appendChild(detailsCell);
+                row.appendChild(doneCell);
+                row.appendChild(actionsCell);
+
+                scheduleTable.appendChild(row);
+            });
+        }
+
+        loadSchedule();
+    </script>
+</body>
+
+</html>
