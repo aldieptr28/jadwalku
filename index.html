@@ -63,7 +63,7 @@
     </div>
 
     <script>
-        const schedule = [
+        let schedule = JSON.parse(localStorage.getItem('schedule')) || [
             { time: "04.00 - 06.00", activity: "Course Web development", details: "Coding studio" },
             { time: "06.00 - 07.00", activity: "Olahraga", details: "Lari/Push Up" },
             { time: "07.00 - 08.00", activity: "Sarapan", details: "-" },
@@ -101,6 +101,7 @@
             deleteButton.classList.add("btn", "btn-danger", "btn-sm");
             deleteButton.onclick = function () {
                 row.remove();
+                saveSchedule();
             };
 
             actionsCell.appendChild(deleteButton);
@@ -112,6 +113,7 @@
             row.appendChild(actionsCell);
 
             scheduleTable.appendChild(row);
+            saveSchedule();
         }
 
         function loadSchedule() {
@@ -144,6 +146,7 @@
                 deleteButton.classList.add("btn", "btn-danger", "btn-sm");
                 deleteButton.onclick = function () {
                     row.remove();
+                    saveSchedule();
                 };
 
                 actionsCell.appendChild(deleteButton);
@@ -157,6 +160,23 @@
                 scheduleTable.appendChild(row);
             });
         }
+
+        function saveSchedule() {
+            const rows = scheduleTable.querySelectorAll("tr");
+            schedule = [];
+
+            rows.forEach(row => {
+                const time = row.querySelector("td:nth-child(1)").textContent;
+                const activity = row.querySelector("td:nth-child(2)").textContent;
+                const details = row.querySelector("td:nth-child(3)").textContent;
+
+                schedule.push({ time, activity, details });
+            });
+
+            localStorage.setItem('schedule', JSON.stringify(schedule));
+        }
+
+        window.addEventListener('beforeunload', saveSchedule);
 
         loadSchedule();
     </script>
