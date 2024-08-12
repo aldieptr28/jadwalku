@@ -4,15 +4,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rutinitas aldi</title>
+    <title>Rutinitas dan Tugas</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             background-color: #f8f9fa;
+            display: flex;
+            height: 100vh;
+            margin: 0;
         }
 
-        h1 {
-            color: #343a40;
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            padding: 15px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar-toggle {
+            background-color: #343a40;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            display: none;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
         }
 
         .table th,
@@ -39,25 +102,55 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="text-center mt-4">Jadwal Rutinitas Aldi Ptr</h1>
-        <div class="row mt-5">
-            <div class="col-md-10 offset-md-1">
-                <button class="btn btn-primary mb-3" onclick="addRow()">Tambah Kegiatan</button>
-                <table class="table table-bordered table-striped">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th class="time-column">Waktu</th>
-                            <th>Kegiatan</th>
-                            <th>Rincian</th>
-                            <th>Selesai</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="schedule-table">
-                        <!-- Jadwal akan diisi di sini -->
-                    </tbody>
-                </table>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+    <div class="sidebar">
+        <a href="#" onclick="showContent('routine')">Jadwal Rutinitas Harian</a>
+        <a href="#" onclick="showContent('tasks')">Daftar Tugas Kuliah</a>
+    </div>
+
+    <div class="content">
+        <div id="routine" class="content-section">
+            <h1 class="text-center mt-4">Jadwal Rutinitas Harian</h1>
+            <div class="row mt-5">
+                <div class="col-md-10 offset-md-1">
+                    <button class="btn btn-primary mb-3" onclick="addRow('schedule-table')">Tambah Kegiatan</button>
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th class="time-column">Waktu</th>
+                                <th>Kegiatan</th>
+                                <th>Rincian</th>
+                                <th>Selesai</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-table">
+                            <!-- Jadwal akan diisi di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks" class="content-section" style="display: none;">
+            <h1 class="text-center mt-4">Daftar Tugas Kuliah</h1>
+            <div class="row mt-5">
+                <div class="col-md-10 offset-md-1">
+                    <button class="btn btn-primary mb-3" onclick="addRow('task-table')">Tambah Tugas</button>
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Mata Kuliah</th>
+                                <th>Deskripsi Tugas</th>
+                                <th>Selesai</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-table">
+                            <!-- Tugas akan diisi di sini -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -66,121 +159,113 @@
         let schedule = JSON.parse(localStorage.getItem('schedule')) || [
             { time: "04.00 - 06.00", activity: "Course Web development", details: "Coding studio", done: false },
             { time: "06.00 - 07.00", activity: "Olahraga", details: "Lari/Push Up", done: false },
-            { time: "07.00 - 08.00", activity: "Sarapan", details: "-", done: false },
-            { time: "08.00 - 09.00", activity: "Membaca buku", details: "Buku tentang teknologi, pengembangan diri", done: false },
-            { time: "09.00 - 12.00", activity: "Course Web development", details: "Coding studio", done: false },
-            { time: "12.00 - 13.00", activity: "Istirahat/tidur siang", details: "-", done: false },
-            { time: "13.00 - 15.00", activity: "Belajar bahasa inggris", details: "mencari kosa kata baru, membaca, berbicara", done: false },
-            { time: "15.00 - 16.00", activity: "Break", details: "waktu santai", done: false },
-            { time: "16.00 - 17.00", activity: "Latihan voli", details: "-", done: false },
-            { time: "19.00 - 20.00", activity: "Latihan public speaking", details: "Mendengarkan podcast, menonton video, berlatih speaking dengan teman", done: false },
-            { time: "20.00 - 22.00", activity: "Course web development", details: "Coding studio", done: false },
+            // Tambahkan jadwal lainnya di sini...
+        ];
+
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [
+            { subject: "Pemrograman Web", description: "Mengerjakan tugas projek akhir", done: false },
+            { subject: "Jaringan Komputer", description: "Membuat laporan praktikum", done: false },
+            // Tambahkan tugas lainnya di sini...
         ];
 
         const scheduleTable = document.getElementById("schedule-table");
+        const taskTable = document.getElementById("task-table");
 
-        function addRow() {
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function showContent(section) {
+            document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+            if (window.innerWidth <= 768) toggleSidebar();
+        }
+
+        function addRow(tableId) {
+            const table = document.getElementById(tableId);
             const row = document.createElement("tr");
 
-            const timeCell = document.createElement("td");
-            timeCell.contentEditable = "true";
-            const activityCell = document.createElement("td");
-            activityCell.contentEditable = "true";
-            const detailsCell = document.createElement("td");
-            detailsCell.contentEditable = "true";
-            const doneCell = document.createElement("td");
-            doneCell.classList.add("checkbox-column");
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.classList.add("form-check-input");
-            doneCell.appendChild(checkbox);
+            if (tableId === 'schedule-table') {
+                row.innerHTML = `
+                    <td contentEditable="true" class="time-column"></td>
+                    <td contentEditable="true"></td>
+                    <td contentEditable="true"></td>
+                    <td class="checkbox-column"><input type="checkbox" class="form-check-input"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'schedule')">Hapus</button></td>
+                `;
+            } else if (tableId === 'task-table') {
+                row.innerHTML = `
+                    <td contentEditable="true"></td>
+                    <td contentEditable="true"></td>
+                    <td class="checkbox-column"><input type="checkbox" class="form-check-input"></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'tasks')">Hapus</button></td>
+                `;
+            }
 
-            const actionsCell = document.createElement("td");
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Hapus";
-            deleteButton.classList.add("btn", "btn-danger", "btn-sm");
-            deleteButton.onclick = function () {
-                row.remove();
-                saveSchedule();
-            };
+            table.appendChild(row);
+            saveData();
+        }
 
-            actionsCell.appendChild(deleteButton);
-
-            row.appendChild(timeCell);
-            row.appendChild(activityCell);
-            row.appendChild(detailsCell);
-            row.appendChild(doneCell);
-            row.appendChild(actionsCell);
-
-            scheduleTable.appendChild(row);
-            saveSchedule();
+        function deleteRow(button, type) {
+            button.parentElement.parentElement.remove();
+            saveData();
         }
 
         function loadSchedule() {
             schedule.forEach(item => {
                 const row = document.createElement("tr");
-
-                const timeCell = document.createElement("td");
-                timeCell.textContent = item.time;
-                timeCell.classList.add("time-column");
-                timeCell.contentEditable = "true";
-
-                const activityCell = document.createElement("td");
-                activityCell.textContent = item.activity;
-                activityCell.contentEditable = "true";
-
-                const detailsCell = document.createElement("td");
-                detailsCell.textContent = item.details;
-                detailsCell.contentEditable = "true";
-
-                const doneCell = document.createElement("td");
-                doneCell.classList.add("checkbox-column");
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.classList.add("form-check-input");
-                checkbox.checked = item.done; // Muat status checkbox dari data
-                doneCell.appendChild(checkbox);
-
-                const actionsCell = document.createElement("td");
-                const deleteButton = document.createElement("button");
-                deleteButton.textContent = "Hapus";
-                deleteButton.classList.add("btn", "btn-danger", "btn-sm");
-                deleteButton.onclick = function () {
-                    row.remove();
-                    saveSchedule();
-                };
-
-                actionsCell.appendChild(deleteButton);
-
-                row.appendChild(timeCell);
-                row.appendChild(activityCell);
-                row.appendChild(detailsCell);
-                row.appendChild(doneCell);
-                row.appendChild(actionsCell);
-
+                row.innerHTML = `
+                    <td contentEditable="true" class="time-column">${item.time}</td>
+                    <td contentEditable="true">${item.activity}</td>
+                    <td contentEditable="true">${item.details}</td>
+                    <td class="checkbox-column"><input type="checkbox" class="form-check-input" ${item.done ? 'checked' : ''}></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'schedule')">Hapus</button></td>
+                `;
                 scheduleTable.appendChild(row);
             });
         }
 
-        function saveSchedule() {
-            const rows = scheduleTable.querySelectorAll("tr");
-            schedule = [];
+        function loadTasks() {
+            tasks.forEach(item => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td contentEditable="true">${item.subject}</td>
+                    <td contentEditable="true">${item.description}</td>
+                    <td class="checkbox-column"><input type="checkbox" class="form-check-input" ${item.done ? 'checked' : ''}></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'tasks')">Hapus</button></td>
+                `;
+                taskTable.appendChild(row);
+            });
+        }
 
-            rows.forEach(row => {
+        function saveData() {
+            const scheduleRows = scheduleTable.querySelectorAll("tr");
+            schedule = [];
+            scheduleRows.forEach(row => {
                 const time = row.querySelector("td:nth-child(1)").textContent;
                 const activity = row.querySelector("td:nth-child(2)").textContent;
                 const details = row.querySelector("td:nth-child(3)").textContent;
-                const isChecked = row.querySelector("td:nth-child(4) input").checked;
+                const done = row.querySelector("td:nth-child(4) input").checked;
+                schedule.push({ time, activity, details, done });
+            });
 
-                schedule.push({ time, activity, details, done: isChecked });
+            const taskRows = taskTable.querySelectorAll("tr");
+            tasks = [];
+            taskRows.forEach(row => {
+                const subject = row.querySelector("td:nth-child(1)").textContent;
+                const description = row.querySelector("td:nth-child(2)").textContent;
+                const done = row.querySelector("td:nth-child(3) input").checked;
+                tasks.push({ subject, description, done });
             });
 
             localStorage.setItem('schedule', JSON.stringify(schedule));
+            localStorage.setItem('tasks', JSON.stringify(tasks));
         }
 
-        window.addEventListener('beforeunload', saveSchedule);
+        window.addEventListener('beforeunload', saveData);
 
         loadSchedule();
+        loadTasks();
     </script>
 </body>
 
