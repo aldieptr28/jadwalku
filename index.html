@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Rutinitas Harian</title>
+    <title>Rutinitas aldi</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -40,7 +40,7 @@
 
 <body>
     <div class="container">
-        <h1 class="text-center mt-4">Jadwal Rutinitas Harian</h1>
+        <h1 class="text-center mt-4">Jadwal Rutinitas Aldi Ptr</h1>
         <div class="row mt-5">
             <div class="col-md-10 offset-md-1">
                 <button class="btn btn-primary mb-3" onclick="addRow()">Tambah Kegiatan</button>
@@ -64,17 +64,17 @@
 
     <script>
         let schedule = JSON.parse(localStorage.getItem('schedule')) || [
-            { time: "04.00 - 06.00", activity: "Course Web development", details: "Coding studio" },
-            { time: "06.00 - 07.00", activity: "Olahraga", details: "Lari/Push Up" },
-            { time: "07.00 - 08.00", activity: "Sarapan", details: "-" },
-            { time: "08.00 - 09.00", activity: "Membaca buku", details: "Buku tentang teknologi, pengembangan diri" },
-            { time: "09.00 - 12.00", activity: "Course Web development", details: "Coding studio" },
-            { time: "12.00 - 13.00", activity: "Istirahat/tidur siang", details: "-" },
-            { time: "13.00 - 15.00", activity: "Belajar bahasa inggris", details: "mencari kosa kata baru, membaca, berbicara" },
-            { time: "15.00 - 16.00", activity: "Break", details: "waktu santai" },
-            { time: "16.00 - 17.00", activity: "Latihan voli", details: "-" },
-            { time: "19.00 - 20.00", activity: "Latihan public speaking", details: "Mendengarkan podcast, menonton video, berlatih speaking dengan teman" },
-            { time: "20.00 - 22.00", activity: "Course web development", details: "Coding studio" },
+            { time: "04.00 - 06.00", activity: "Course Web development", details: "Coding studio", done: false },
+            { time: "06.00 - 07.00", activity: "Olahraga", details: "Lari/Push Up", done: false },
+            { time: "07.00 - 08.00", activity: "Sarapan", details: "-", done: false },
+            { time: "08.00 - 09.00", activity: "Membaca buku", details: "Buku tentang teknologi, pengembangan diri", done: false },
+            { time: "09.00 - 12.00", activity: "Course Web development", details: "Coding studio", done: false },
+            { time: "12.00 - 13.00", activity: "Istirahat/tidur siang", details: "-", done: false },
+            { time: "13.00 - 15.00", activity: "Belajar bahasa inggris", details: "mencari kosa kata baru, membaca, berbicara", done: false },
+            { time: "15.00 - 16.00", activity: "Break", details: "waktu santai", done: false },
+            { time: "16.00 - 17.00", activity: "Latihan voli", details: "-", done: false },
+            { time: "19.00 - 20.00", activity: "Latihan public speaking", details: "Mendengarkan podcast, menonton video, berlatih speaking dengan teman", done: false },
+            { time: "20.00 - 22.00", activity: "Course web development", details: "Coding studio", done: false },
         ];
 
         const scheduleTable = document.getElementById("schedule-table");
@@ -138,6 +138,7 @@
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.classList.add("form-check-input");
+                checkbox.checked = item.done; // Muat status checkbox dari data
                 doneCell.appendChild(checkbox);
 
                 const actionsCell = document.createElement("td");
@@ -169,8 +170,9 @@
                 const time = row.querySelector("td:nth-child(1)").textContent;
                 const activity = row.querySelector("td:nth-child(2)").textContent;
                 const details = row.querySelector("td:nth-child(3)").textContent;
+                const isChecked = row.querySelector("td:nth-child(4) input").checked;
 
-                schedule.push({ time, activity, details });
+                schedule.push({ time, activity, details, done: isChecked });
             });
 
             localStorage.setItem('schedule', JSON.stringify(schedule));
