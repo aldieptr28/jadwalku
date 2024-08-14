@@ -106,6 +106,45 @@
                 right: 0;
             }
         }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding-top: 10px;
+            }
+
+            #main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 14px;
+            }
+
+            table,
+            th,
+            td {
+                font-size: 12px;
+                padding: 5px;
+            }
+
+            .sidebar a {
+                padding: 8px 10px;
+                font-size: 16px;
+            }
+
+            .open-btn {
+                padding: 8px 10px;
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 
@@ -211,14 +250,15 @@
         function showContent(contentId) {
             const contents = document.querySelectorAll('.content-container');
             contents.forEach(content => content.classList.remove('active'));
+
             document.getElementById(contentId).classList.add('active');
         }
 
         function addNewRow(tableId) {
             const tableBody = document.getElementById(tableId);
             const row = document.createElement('tr');
-            const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2;
 
+            const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2; // Minus "Selesai" and "Aksi"
             for (let i = 0; i < columns; i++) {
                 const cell = document.createElement('td');
                 cell.contentEditable = "true";
@@ -237,6 +277,7 @@
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "Hapus";
             deleteButton.classList.add("btn", "btn-danger", "btn-sm");
+            deleteButton.setAttribute("title", "Hapus Baris");
             deleteButton.onclick = function () {
                 row.remove();
                 saveContent();
@@ -252,72 +293,42 @@
         function addNewContent() {
             const contentName = prompt("Masukkan nama konten baru:");
             if (contentName) {
-                const contentId = contentName.toLowerCase().replace(/ /g, '-');
-                const numOfColumns = parseInt(prompt("Masukkan jumlah kolom untuk tabel:"), 10);
-                const columnHeaders = [];
+                const link = document.createElement("a");
+                link.href = "javascript:void(0)";
+                link.onclick = function () { showContent(contentName); };
+                link.textContent = contentName;
+                document.getElementById("additionalContentLinks").appendChild(link);
 
-                for (let i = 1; i <= numOfColumns; i++) {
-                    columnHeaders.push(prompt(`Masukkan judul untuk kolom ${i}: `));
-                }
-
-                if (numOfColumns > 0) {
-                    const newContentLink = document.createElement('a');
-                    newContentLink.href = "javascript:void(0)";
-                    newContentLink.textContent = contentName;
-                    newContentLink.onclick = function () {
-                        showContent(contentId);
-                    };
-
-                    document.getElementById('additionalContentLinks').appendChild(newContentLink);
-
-                    const newContentSection = document.createElement('div');
-                    newContentSection.id = contentId;
-                    newContentSection.className = 'content-container';
-
-                    let tableHeaderRow = '';
-                    columnHeaders.forEach(header => {
-                        tableHeaderRow += `<th>${header}</th>`;
-                    });
-
-                    newContentSection.innerHTML = `
-                        <h1 class="text-center mt-4">${contentName}</h1>
-                        <div class="row mt-5">
-                            <div class="col-md-10 offset-md-1">
-                                <button class="btn btn-primary mb-3" onclick="addNewRow('${contentId}-table')">Tambah Baris</button>
-                                <table class="table table-bordered table-striped">
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            ${tableHeaderRow}
-                                            <th>Selesai</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="${contentId}-table">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>`;
-
-                    document.getElementById('main-content').appendChild(newContentSection);
-                    showContent(contentId);
-                    saveContent();
-                }
+                const newContent = document.createElement("div");
+                newContent.id = contentName;
+                newContent.classList.add("content-container");
+                newContent.innerHTML = `<h1 class="text-center mt-4">${contentName}</h1><div class="row mt-5"><div class="col-md-10 offset-md-1"><button class="btn btn-primary mb-3" onclick="addNewRow('${contentName}-table')">Tambah Baris</button><table class="table table-bordered table-striped"><thead class="thead-dark"><tr><th>Kolom 1</th><th>Kolom 2</th><th>Kolom 3</th><th>Selesai</th><th>Aksi</th></tr></thead><tbody id="${contentName}-table"></tbody></table></div></div>`;
+                document.getElementById("main-content").appendChild(newContent);
+                saveContent();
             }
         }
 
         function saveContent() {
-            const content = document.getElementById('main-content').innerHTML;
-            localStorage.setItem('content', content);
+            const mainContent = document.getElementById('main-content').innerHTML;
+            localStorage.setItem('mainContent', mainContent);
+            const sidebar = document.getElementById('mySidebar').innerHTML;
+            localStorage.setItem('sidebar', sidebar);
         }
 
-        function loadContent() {
-            const savedContent = localStorage.getItem('content');
-            if (savedContent) {
-                document.getElementById('main-content').innerHTML = savedContent;
+        window.onload = function () {
+            const savedMainContent = localStorage.getItem('mainContent');
+            const savedSidebar = localStorage.getItem('sidebar');
+            if (savedMainContent && savedSidebar) {
+                document.getElementById('main-content').innerHTML = savedMainContent;
+                document.getElementById('mySidebar').innerHTML = savedSidebar;
+
+                const openButton = document.createElement('button');
+                openButton.classList.add('open-btn');
+                openButton.innerHTML = '&#9776; Menu';
+                openButton.onclick = openNav;
+                document.getElementById('main-content').insertBefore(openButton, document.getElementById('main-content').firstChild);
             }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadContent);
+        };
     </script>
 </body>
 
