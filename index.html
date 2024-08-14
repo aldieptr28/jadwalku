@@ -4,145 +4,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwalku</title>
+    <title>Aplikasi Manajemen Konten</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             background-color: #f8f9fa;
-            display: flex;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-        }
-
-        h1 {
-            padding-top: 30px;
         }
 
         .sidebar {
+            height: 100%;
             width: 250px;
-            background-color: #343a40;
-            padding: 15px;
             position: fixed;
             top: 0;
-            bottom: 0;
             left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            transition: 0.3s;
             overflow-y: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1000;
         }
 
         .sidebar a {
-            color: #fff;
-            text-decoration: none;
-            display: block;
             padding: 10px 15px;
-            margin-bottom: 5px;
-            border-radius: 4px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: 0.3s;
         }
 
         .sidebar a:hover {
-            background-color: #495057;
+            background-color: #575757;
         }
 
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
-        .sidebar-toggle {
-            background-color: #343a40;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            position: fixed;
-            top: 20px;
-            /* Menambahkan jarak atas untuk tampilan ponsel */
-            left: 15px;
-            z-index: 1001;
-            font-size: 24px;
-        }
-
-        .close-sidebar {
-            background-color: transparent;
-            border: none;
-            color: #fff;
+        .sidebar .close-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
             cursor: pointer;
-            font-size: 24px;
+        }
+
+        .open-btn {
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #343a40;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
+
+        #main-content {
+            margin-left: 250px;
+            transition: margin-left 0.3s;
+            padding: 20px;
+        }
+
+        .content-container {
             display: none;
         }
 
-        .content {
-            margin-left: 250px;
-            padding: 20px;
+        .content-container.active {
+            display: block;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        table {
             width: 100%;
-            transition: margin-left 0.3s ease-in-out;
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .content {
-                margin-left: 0;
-            }
-
-            .sidebar.active+.content {
-                margin-left: 250px;
-            }
-
-            .sidebar-toggle {
-                top: 10px;
-                /* Menambahkan jarak atas untuk tampilan ponsel */
-            }
-        }
-
-        .table th,
-        .table td {
+        td,
+        th {
             text-align: center;
             vertical-align: middle;
         }
 
-        .time-column {
-            white-space: nowrap;
-            width: 150px;
-        }
+        @media (max-width: 768px) {
+            #main-content {
+                margin-left: 0;
+            }
 
-        .checkbox-column {
-            text-align: center;
-        }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
 
-        .form-check-input {
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
+            .sidebar a {
+                float: left;
+                text-align: center;
+                width: 100%;
+            }
+
+            .sidebar .close-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+            }
         }
     </style>
 </head>
 
 <body>
-    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
-    <div class="sidebar" id="sidebar">
-        <button class="close-sidebar" onclick="toggleSidebar()">&#10006;</button>
-        <a href="#" onclick="showContent('routine')">Jadwal Rutinitas Harian</a>
-        <a href="#" onclick="showContent('tasks')">Daftar Tugas Kuliah</a>
+    <div id="mySidebar" class="sidebar">
+        <span class="close-btn" onclick="closeNav()">&times;</span>
+        <a href="javascript:void(0)" onclick="showContent('schedule')">Jadwal Rutinitas</a>
+        <a href="javascript:void(0)" onclick="showContent('tasks')">Tugas Kuliah</a>
+        <a href="javascript:void(0)" onclick="showContent('shopping')">Daftar Belanja</a>
+        <hr>
+        <h5 class="text-light pl-3">Konten Tambahan</h5>
+        <div id="additionalContentLinks"></div>
+        <button class="btn btn-primary btn-sm" onclick="addNewContent()">Tambah Konten</button>
     </div>
 
-    <div class="content">
-        <div id="routine" class="content-section">
+    <div id="main-content">
+        <button class="open-btn" onclick="openNav()">&#9776; Menu</button>
+
+        <div id="schedule" class="content-container active">
             <h1 class="text-center mt-4">Jadwal Rutinitas Harian</h1>
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
-                    <button class="btn btn-primary mb-3" onclick="addRow('schedule-table')">Tambah Kegiatan</button>
+                    <button class="btn btn-primary mb-3" onclick="addNewRow('schedule-table')">Tambah Baris</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
-                                <th class="time-column">Waktu</th>
+                                <th>Waktu</th>
                                 <th>Kegiatan</th>
                                 <th>Rincian</th>
                                 <th>Selesai</th>
@@ -150,157 +140,184 @@
                             </tr>
                         </thead>
                         <tbody id="schedule-table">
-                            <!-- Jadwal akan diisi di sini -->
+                            <!-- Isi konten akan diisi di sini -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <div id="tasks" class="content-section" style="display: none;">
-            <h1 class="text-center mt-4">Daftar Tugas Kuliah</h1>
+        <div id="tasks" class="content-container">
+            <h1 class="text-center mt-4">Tugas Kuliah</h1>
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
-                    <button class="btn btn-primary mb-3" onclick="addRow('task-table')">Tambah Tugas</button>
+                    <button class="btn btn-primary mb-3" onclick="addNewRow('tasks-table')">Tambah Baris</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
-                                <th>Mata Kuliah</th>
-                                <th>Deskripsi Tugas</th>
+                                <th>Tugas</th>
+                                <th>Keterangan</th>
                                 <th>Selesai</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="task-table">
-                            <!-- Tugas akan diisi di sini -->
+                        <tbody id="tasks-table">
+                            <!-- Isi konten akan diisi di sini -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        <div id="shopping" class="content-container">
+            <h1 class="text-center mt-4">Daftar Belanja</h1>
+            <div class="row mt-5">
+                <div class="col-md-10 offset-md-1">
+                    <button class="btn btn-primary mb-3" onclick="addNewRow('shopping-table')">Tambah Baris</button>
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Barang</th>
+                                <th>Keterangan</th>
+                                <th>Selesai</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shopping-table">
+                            <!-- Isi konten akan diisi di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        let schedule = JSON.parse(localStorage.getItem('schedule')) || [
-            { time: "04.00 - 06.00", activity: "Course Web development", details: "Coding studio", done: false },
-            { time: "06.00 - 07.00", activity: "Olahraga", details: "Lari/Push Up", done: false },
-        ];
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+            document.getElementById("main-content").style.marginLeft = "250px";
+        }
 
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [
-            { subject: "Pemrograman Web", description: "Mengerjakan tugas projek akhir", done: false },
-            { subject: "Jaringan Komputer", description: "Membuat laporan praktikum", done: false },
-        ];
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("main-content").style.marginLeft = "0";
+        }
 
-        const scheduleTable = document.getElementById("schedule-table");
-        const taskTable = document.getElementById("task-table");
+        function showContent(contentId) {
+            const contents = document.querySelectorAll('.content-container');
+            contents.forEach(content => content.classList.remove('active'));
+            document.getElementById(contentId).classList.add('active');
+        }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle('active');
-            const toggleButton = document.querySelector('.sidebar-toggle');
-            const closeButton = document.querySelector('.close-sidebar');
-            if (sidebar.classList.contains('active')) {
-                toggleButton.style.display = 'none';
-                closeButton.style.display = 'block';
-            } else {
-                toggleButton.style.display = 'block';
-                closeButton.style.display = 'none';
+        function addNewRow(tableId) {
+            const tableBody = document.getElementById(tableId);
+            const row = document.createElement('tr');
+            const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2;
+
+            for (let i = 0; i < columns; i++) {
+                const cell = document.createElement('td');
+                cell.contentEditable = "true";
+                row.appendChild(cell);
+            }
+
+            const doneCell = document.createElement('td');
+            doneCell.classList.add("checkbox-column");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.classList.add("form-check-input");
+            doneCell.appendChild(checkbox);
+            row.appendChild(doneCell);
+
+            const actionsCell = document.createElement("td");
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Hapus";
+            deleteButton.classList.add("btn", "btn-danger", "btn-sm");
+            deleteButton.onclick = function () {
+                row.remove();
+                saveContent();
+            };
+
+            actionsCell.appendChild(deleteButton);
+            row.appendChild(actionsCell);
+
+            tableBody.appendChild(row);
+            saveContent();
+        }
+
+        function addNewContent() {
+            const contentName = prompt("Masukkan nama konten baru:");
+            if (contentName) {
+                const contentId = contentName.toLowerCase().replace(/ /g, '-');
+                const numOfColumns = parseInt(prompt("Masukkan jumlah kolom untuk tabel:"), 10);
+                const columnHeaders = [];
+
+                for (let i = 1; i <= numOfColumns; i++) {
+                    columnHeaders.push(prompt(`Masukkan judul untuk kolom ${i}: `));
+                }
+
+                if (numOfColumns > 0) {
+                    const newContentLink = document.createElement('a');
+                    newContentLink.href = "javascript:void(0)";
+                    newContentLink.textContent = contentName;
+                    newContentLink.onclick = function () {
+                        showContent(contentId);
+                    };
+
+                    document.getElementById('additionalContentLinks').appendChild(newContentLink);
+
+                    const newContentSection = document.createElement('div');
+                    newContentSection.id = contentId;
+                    newContentSection.className = 'content-container';
+
+                    let tableHeaderRow = '';
+                    columnHeaders.forEach(header => {
+                        tableHeaderRow += `<th>${header}</th>`;
+                    });
+
+                    newContentSection.innerHTML = `
+                        <h1 class="text-center mt-4">${contentName}</h1>
+                        <div class="row mt-5">
+                            <div class="col-md-10 offset-md-1">
+                                <button class="btn btn-primary mb-3" onclick="addNewRow('${contentId}-table')">Tambah Baris</button>
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            ${tableHeaderRow}
+                                            <th>Selesai</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="${contentId}-table">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+
+                    document.getElementById('main-content').appendChild(newContentSection);
+                    showContent(contentId);
+                    saveContent();
+                }
             }
         }
 
-        function showContent(section) {
-            document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
-            document.getElementById(section).style.display = 'block';
-            if (window.innerWidth <= 768) toggleSidebar();
+        function saveContent() {
+            const content = document.getElementById('main-content').innerHTML;
+            localStorage.setItem('content', content);
         }
 
-        function addRow(tableId) {
-            const table = document.getElementById(tableId);
-            const row = document.createElement("tr");
-
-            if (tableId === 'schedule-table') {
-                row.innerHTML = `
-                    <td contentEditable="true" class="time-column"></td>
-                    <td contentEditable="true"></td>
-                    <td contentEditable="true"></td>
-                    <td class="checkbox-column"><input type="checkbox" class="form-check-input"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'schedule')">Hapus</button></td>
-                `;
-            } else if (tableId === 'task-table') {
-                row.innerHTML = `
-                    <td contentEditable="true"></td>
-                    <td contentEditable="true"></td>
-                    <td class="checkbox-column"><input type="checkbox" class="form-check-input"></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'tasks')">Hapus</button></td>
-                `;
+        function loadContent() {
+            const savedContent = localStorage.getItem('content');
+            if (savedContent) {
+                document.getElementById('main-content').innerHTML = savedContent;
             }
-
-            table.appendChild(row);
-            saveData();
         }
 
-        function deleteRow(button, type) {
-            button.parentElement.parentElement.remove();
-            saveData();
-        }
-
-        function loadSchedule() {
-            schedule.forEach(item => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td contentEditable="true" class="time-column">${item.time}</td>
-                    <td contentEditable="true">${item.activity}</td>
-                    <td contentEditable="true">${item.details}</td>
-                    <td class="checkbox-column"><input type="checkbox" class="form-check-input" ${item.done ? 'checked' : ''}></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'schedule')">Hapus</button></td>
-                `;
-                scheduleTable.appendChild(row);
-            });
-        }
-
-        function loadTasks() {
-            tasks.forEach(item => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td contentEditable="true">${item.subject}</td>
-                    <td contentEditable="true">${item.description}</td>
-                    <td class="checkbox-column"><input type="checkbox" class="form-check-input" ${item.done ? 'checked' : ''}></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteRow(this, 'tasks')">Hapus</button></td>
-                `;
-                taskTable.appendChild(row);
-            });
-        }
-
-        function saveData() {
-            const scheduleRows = scheduleTable.querySelectorAll("tr");
-            schedule = [];
-
-            scheduleRows.forEach(row => {
-                const time = row.querySelector("td:nth-child(1)").textContent;
-                const activity = row.querySelector("td:nth-child(2)").textContent;
-                const details = row.querySelector("td:nth-child(3)").textContent;
-                const done = row.querySelector("td:nth-child(4) input").checked;
-                schedule.push({ time, activity, details, done });
-            });
-
-            const taskRows = taskTable.querySelectorAll("tr");
-            tasks = [];
-
-            taskRows.forEach(row => {
-                const subject = row.querySelector("td:nth-child(1)").textContent;
-                const description = row.querySelector("td:nth-child(2)").textContent;
-                const done = row.querySelector("td:nth-child(3) input").checked;
-                tasks.push({ subject, description, done });
-            });
-
-            localStorage.setItem('schedule', JSON.stringify(schedule));
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
-        window.addEventListener('beforeunload', saveData);
-
-        loadSchedule();
-        loadTasks();
+        document.addEventListener('DOMContentLoaded', loadContent);
     </script>
 </body>
 
