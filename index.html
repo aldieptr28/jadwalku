@@ -2,9 +2,9 @@
 <html lang="id">
 
 <head>
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwalku</title>
+    <title>Manajemen jadwalku</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -145,6 +145,45 @@
                 font-size: 16px;
             }
         }
+
+        @media (max-width: 400px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding-top: 10px;
+            }
+
+            #main-content {
+                margin-left: 0;
+                padding: 5px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .btn {
+                font-size: 12px;
+            }
+
+            table,
+            th,
+            td {
+                font-size: 10px;
+                padding: 3px;
+            }
+
+            .sidebar a {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+
+            .open-btn {
+                padding: 6px 8px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 
@@ -163,12 +202,15 @@
     <div id="main-content">
         <button class="open-btn" onclick="openNav()">&#9776; Menu</button>
 
+        <!-- Jadwal Rutinitas Harian -->
         <div id="schedule" class="content-container active">
             <h1 class="text-center mt-4">Jadwal Rutinitas Harian</h1>
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
                     <button class="btn btn-primary mb-3" onclick="addNewRow('schedule-table')">Tambah Baris</button>
-                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('schedule-table')">Tambah Kolom</button>
+                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('schedule-table')">Tambah
+                        Kolom</button>
+                    <button class="btn btn-danger mb-3" onclick="removeContent('schedule')">Hapus Konten</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
@@ -187,12 +229,14 @@
             </div>
         </div>
 
+        <!-- Tugas Kuliah -->
         <div id="tasks" class="content-container">
             <h1 class="text-center mt-4">Tugas Kuliah</h1>
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
                     <button class="btn btn-primary mb-3" onclick="addNewRow('tasks-table')">Tambah Baris</button>
                     <button class="btn btn-secondary mb-3" onclick="addNewColumn('tasks-table')">Tambah Kolom</button>
+                    <button class="btn btn-danger mb-3" onclick="removeContent('tasks')">Hapus Konten</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
@@ -210,12 +254,15 @@
             </div>
         </div>
 
+        <!-- Daftar Belanja -->
         <div id="shopping" class="content-container">
             <h1 class="text-center mt-4">Daftar Belanja</h1>
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
                     <button class="btn btn-primary mb-3" onclick="addNewRow('shopping-table')">Tambah Baris</button>
-                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('shopping-table')">Tambah Kolom</button>
+                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('shopping-table')">Tambah
+                        Kolom</button>
+                    <button class="btn btn-danger mb-3" onclick="removeContent('shopping')">Hapus Konten</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
@@ -260,7 +307,7 @@
             const tableBody = document.getElementById(tableId);
             const row = document.createElement('tr');
             const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2; // Minus "Selesai" dan "Aksi"
-            
+
             for (let i = 0; i < columns; i++) {
                 const cell = document.createElement('td');
                 cell.contentEditable = "true";
@@ -314,6 +361,7 @@
                 link.href = "javascript:void(0)";
                 link.onclick = function () { showContent(contentName); };
                 link.textContent = contentName;
+                link.setAttribute("data-content-id", contentName);
                 document.getElementById("additionalContentLinks").appendChild(link);
 
                 const newContent = document.createElement("div");
@@ -347,7 +395,10 @@
         function removeContent(contentName) {
             if (confirm("Anda yakin ingin menghapus konten ini?")) {
                 document.getElementById(contentName).remove();
-                document.querySelector(`a[href="javascript:void(0)"][onclick="showContent('${contentName}')"]`).remove();
+                const sidebarLink = document.querySelector(`#additionalContentLinks a[data-content-id="${contentName}"]`);
+                if (sidebarLink) {
+                    sidebarLink.remove();
+                }
                 saveContent();
             }
         }
@@ -392,9 +443,7 @@
             const savedContent = JSON.parse(localStorage.getItem('contentData')) || [];
             const savedLinks = JSON.parse(localStorage.getItem('additionalLinks')) || [];
 
-            savedLinks.forEach(link => {
-                document.getElementById('additionalContentLinks').innerHTML += link;
-            });
+            document.getElementById('additionalContentLinks').innerHTML = savedLinks.join("");
 
             savedContent.forEach(contentData => {
                 const newContent = document.createElement('div');
@@ -453,7 +502,19 @@
             });
         }
 
-        window.onload = loadContent;
+        // Membersihkan konten tambahan pada halaman pertama kali dimuat
+        function clearAdditionalContent() {
+            localStorage.removeItem('contentData');
+            localStorage.removeItem('additionalLinks');
+            document.getElementById('additionalContentLinks').innerHTML = '';
+            loadContent();
+        }
+
+        window.onload = function () {
+            clearAdditionalContent();
+            loadContent();
+        };
+
         window.onbeforeunload = saveContent;
     </script>
 </body>
