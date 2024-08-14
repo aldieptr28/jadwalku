@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -151,7 +151,7 @@
 <body>
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
-        <a href="javascript:void(0)" onclick="showContent('schedule')">Jadwal Rutinitas</a>
+        <a href="javascript:void(0)" onclick="showContent('schedule')">Jadwal Rutinitas Harian</a>
         <a href="javascript:void(0)" onclick="showContent('tasks')">Tugas Kuliah</a>
         <a href="javascript:void(0)" onclick="showContent('shopping')">Daftar Belanja</a>
         <hr>
@@ -168,6 +168,7 @@
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
                     <button class="btn btn-primary mb-3" onclick="addNewRow('schedule-table')">Tambah Baris</button>
+                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('schedule-table')">Tambah Kolom</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
@@ -191,6 +192,7 @@
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
                     <button class="btn btn-primary mb-3" onclick="addNewRow('tasks-table')">Tambah Baris</button>
+                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('tasks-table')">Tambah Kolom</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
@@ -213,6 +215,7 @@
             <div class="row mt-5">
                 <div class="col-md-10 offset-md-1">
                     <button class="btn btn-primary mb-3" onclick="addNewRow('shopping-table')">Tambah Baris</button>
+                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('shopping-table')">Tambah Kolom</button>
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
@@ -250,15 +253,14 @@
         function showContent(contentId) {
             const contents = document.querySelectorAll('.content-container');
             contents.forEach(content => content.classList.remove('active'));
-
             document.getElementById(contentId).classList.add('active');
         }
 
         function addNewRow(tableId) {
             const tableBody = document.getElementById(tableId);
             const row = document.createElement('tr');
-
-            const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2; // Minus "Selesai" and "Aksi"
+            const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2; // Minus "Selesai" dan "Aksi"
+            
             for (let i = 0; i < columns; i++) {
                 const cell = document.createElement('td');
                 cell.contentEditable = "true";
@@ -277,16 +279,31 @@
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "Hapus";
             deleteButton.classList.add("btn", "btn-danger", "btn-sm");
-            deleteButton.setAttribute("title", "Hapus Baris");
             deleteButton.onclick = function () {
                 row.remove();
                 saveContent();
             };
-
             actionsCell.appendChild(deleteButton);
             row.appendChild(actionsCell);
 
             tableBody.appendChild(row);
+            saveContent();
+        }
+
+        function addNewColumn(tableId) {
+            const table = document.getElementById(tableId).parentElement;
+            const th = document.createElement('th');
+            th.contentEditable = "true";
+            th.textContent = `Kolom ${table.querySelectorAll('th').length - 1}`;
+            table.querySelector('thead tr').insertBefore(th, table.querySelector('th:nth-last-child(3)'));
+
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const td = document.createElement('td');
+                td.contentEditable = "true";
+                row.insertBefore(td, row.querySelector('td:nth-last-child(3)'));
+            });
+
             saveContent();
         }
 
@@ -302,33 +319,142 @@
                 const newContent = document.createElement("div");
                 newContent.id = contentName;
                 newContent.classList.add("content-container");
-                newContent.innerHTML = `<h1 class="text-center mt-4">${contentName}</h1><div class="row mt-5"><div class="col-md-10 offset-md-1"><button class="btn btn-primary mb-3" onclick="addNewRow('${contentName}-table')">Tambah Baris</button><table class="table table-bordered table-striped"><thead class="thead-dark"><tr><th>Kolom 1</th><th>Kolom 2</th><th>Kolom 3</th><th>Selesai</th><th>Aksi</th></tr></thead><tbody id="${contentName}-table"></tbody></table></div></div>`;
+                newContent.innerHTML = `<h1 class="text-center mt-4">${contentName}</h1>
+                <div class="row mt-5">
+                    <div class="col-md-10 offset-md-1">
+                        <button class="btn btn-primary mb-3" onclick="addNewRow('${contentName}-table')">Tambah Baris</button>
+                        <button class="btn btn-secondary mb-3" onclick="addNewColumn('${contentName}-table')">Tambah Kolom</button>
+                        <button class="btn btn-danger mb-3" onclick="removeContent('${contentName}')">Hapus Konten</button>
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Kolom 1</th>
+                                    <th>Kolom 2</th>
+                                    <th>Kolom 3</th>
+                                    <th>Selesai</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="${contentName}-table"></tbody>
+                        </table>
+                    </div>
+                </div>`;
                 document.getElementById("main-content").appendChild(newContent);
                 saveContent();
             }
         }
 
-        function saveContent() {
-            const mainContent = document.getElementById('main-content').innerHTML;
-            localStorage.setItem('mainContent', mainContent);
-            const sidebar = document.getElementById('mySidebar').innerHTML;
-            localStorage.setItem('sidebar', sidebar);
+        function removeContent(contentName) {
+            if (confirm("Anda yakin ingin menghapus konten ini?")) {
+                document.getElementById(contentName).remove();
+                document.querySelector(`a[href="javascript:void(0)"][onclick="showContent('${contentName}')"]`).remove();
+                saveContent();
+            }
         }
 
-        window.onload = function () {
-            const savedMainContent = localStorage.getItem('mainContent');
-            const savedSidebar = localStorage.getItem('sidebar');
-            if (savedMainContent && savedSidebar) {
-                document.getElementById('main-content').innerHTML = savedMainContent;
-                document.getElementById('mySidebar').innerHTML = savedSidebar;
+        function saveContent() {
+            const contents = [];
+            document.querySelectorAll('.content-container').forEach(container => {
+                const contentData = {
+                    id: container.id,
+                    columns: [],
+                    tableRows: []
+                };
+                container.querySelectorAll('thead th').forEach((th, index) => {
+                    if (index < container.querySelectorAll('thead th').length - 2) {
+                        contentData.columns.push(th.textContent);
+                    }
+                });
+                container.querySelectorAll('tbody tr').forEach(row => {
+                    const rowData = {
+                        columns: [],
+                        done: row.querySelector('.checkbox-column input').checked
+                    };
+                    row.querySelectorAll('td').forEach((cell, index) => {
+                        if (index < row.querySelectorAll('td').length - 2) {
+                            rowData.columns.push(cell.textContent);
+                        }
+                    });
+                    contentData.tableRows.push(rowData);
+                });
+                contents.push(contentData);
+            });
+            localStorage.setItem('contentData', JSON.stringify(contents));
 
-                const openButton = document.createElement('button');
-                openButton.classList.add('open-btn');
-                openButton.innerHTML = '&#9776; Menu';
-                openButton.onclick = openNav;
-                document.getElementById('main-content').insertBefore(openButton, document.getElementById('main-content').firstChild);
-            }
-        };
+            const additionalLinks = [];
+            document.querySelectorAll('#additionalContentLinks a').forEach(link => {
+                additionalLinks.push(link.outerHTML);
+            });
+            localStorage.setItem('additionalLinks', JSON.stringify(additionalLinks));
+        }
+
+        function loadContent() {
+            const savedContent = JSON.parse(localStorage.getItem('contentData')) || [];
+            const savedLinks = JSON.parse(localStorage.getItem('additionalLinks')) || [];
+
+            savedLinks.forEach(link => {
+                document.getElementById('additionalContentLinks').innerHTML += link;
+            });
+
+            savedContent.forEach(contentData => {
+                const newContent = document.createElement('div');
+                newContent.id = contentData.id;
+                newContent.classList.add('content-container');
+                newContent.innerHTML = `<h1 class="text-center mt-4">${contentData.id}</h1>
+                <div class="row mt-5">
+                    <div class="col-md-10 offset-md-1">
+                        <button class="btn btn-primary mb-3" onclick="addNewRow('${contentData.id}-table')">Tambah Baris</button>
+                        <button class="btn btn-secondary mb-3" onclick="addNewColumn('${contentData.id}-table')">Tambah Kolom</button>
+                        <button class="btn btn-danger mb-3" onclick="removeContent('${contentData.id}')">Hapus Konten</button>
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>${contentData.columns.map(col => `<th>${col}</th>`).join('')}
+                                    <th>Selesai</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="${contentData.id}-table"></tbody>
+                        </table>
+                    </div>
+                </div>`;
+                document.getElementById('main-content').appendChild(newContent);
+
+                const tableBody = document.getElementById(`${contentData.id}-table`);
+                contentData.tableRows.forEach(rowData => {
+                    const row = document.createElement('tr');
+                    rowData.columns.forEach(columnData => {
+                        const cell = document.createElement('td');
+                        cell.contentEditable = "true";
+                        cell.textContent = columnData;
+                        row.appendChild(cell);
+                    });
+                    const doneCell = document.createElement('td');
+                    doneCell.classList.add('checkbox-column');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.classList.add('form-check-input');
+                    checkbox.checked = rowData.done;
+                    doneCell.appendChild(checkbox);
+                    row.appendChild(doneCell);
+
+                    const actionsCell = document.createElement('td');
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Hapus';
+                    deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
+                    deleteButton.onclick = function () {
+                        row.remove();
+                        saveContent();
+                    };
+                    actionsCell.appendChild(deleteButton);
+                    row.appendChild(actionsCell);
+
+                    tableBody.appendChild(row);
+                });
+            });
+        }
+
+        window.onload = loadContent;
+        window.onbeforeunload = saveContent;
     </script>
 </body>
 
