@@ -4,7 +4,7 @@
 <head>
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Manajemen jadwalku</title>
+    <title>Aplikasi Manajemen Konten</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -214,9 +214,9 @@
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
-                                <th>Waktu</th>
-                                <th>Kegiatan</th>
-                                <th>Rincian</th>
+                                <th contentEditable="true">Waktu</th>
+                                <th contentEditable="true">Kegiatan</th>
+                                <th contentEditable="true">Rincian</th>
                                 <th>Selesai</th>
                                 <th>Aksi</th>
                             </tr>
@@ -240,8 +240,8 @@
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
-                                <th>Tugas</th>
-                                <th>Keterangan</th>
+                                <th contentEditable="true">Tugas</th>
+                                <th contentEditable="true">Keterangan</th>
                                 <th>Selesai</th>
                                 <th>Aksi</th>
                             </tr>
@@ -266,8 +266,8 @@
                     <table class="table table-bordered table-striped">
                         <thead class="thead-dark">
                             <tr>
-                                <th>Barang</th>
-                                <th>Keterangan</th>
+                                <th contentEditable="true">Barang</th>
+                                <th contentEditable="true">Keterangan</th>
                                 <th>Selesai</th>
                                 <th>Aksi</th>
                             </tr>
@@ -376,9 +376,9 @@
                         <table class="table table-bordered table-striped">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Kolom 1</th>
-                                    <th>Kolom 2</th>
-                                    <th>Kolom 3</th>
+                                    <th contentEditable="true">Kolom 1</th>
+                                    <th contentEditable="true">Kolom 2</th>
+                                    <th contentEditable="true">Kolom 3</th>
                                     <th>Selesai</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -457,7 +457,7 @@
                         <button class="btn btn-danger mb-3" onclick="removeContent('${contentData.id}')">Hapus Konten</button>
                         <table class="table table-bordered table-striped">
                             <thead class="thead-dark">
-                                <tr>${contentData.columns.map(col => `<th>${col}</th>`).join('')}
+                                <tr>${contentData.columns.map(col => `<th contentEditable="true">${col}</th>`).join('')}
                                     <th>Selesai</th>
                                     <th>Aksi</th>
                                 </tr>
