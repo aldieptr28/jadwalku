@@ -13,8 +13,8 @@
             background-color: #f4f4f9;
             color: #333;
             display: flex;
-            min-height: 100vh;
             flex-direction: column;
+            min-height: 100vh;
         }
 
         .sidebar {
@@ -197,6 +197,19 @@
             left: 20px;
         }
 
+        /* Footer Style */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+            margin-top: auto;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -290,6 +303,10 @@
             <!-- Halaman akan ditambahkan di sini -->
         </div>
     </div>
+
+    <footer>
+        Dibuat oleh Aldi Putra Pratama
+    </footer>
 
     <script>
         let pageCount = 0;
