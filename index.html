@@ -100,10 +100,16 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            /* Agar bisa scroll secara horizontal */
+            width: 100%;
+            /* Full lebar */
         }
 
         table {
             width: 100%;
+            max-width: 100%;
+            /* Pastikan tidak melebihi kontainer */
             border-collapse: collapse;
             margin-top: 20px;
             background-color: white;
@@ -128,6 +134,21 @@
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+            margin-top: auto;
+            clear: both;
+            /* Agar footer tidak terhalangi */
+        }
+
 
         .delete-page-btn {
             color: #ff4d4f;
