@@ -401,8 +401,6 @@
                 <table id="data-table-${pageId}">
                     <thead>
                         <tr>
-                            <th>Nama</th>
-                            <th>Usia</th>
                             <th>Selesai</th>
                             <th>Aksi</th>
                         </tr>
@@ -508,7 +506,7 @@
                 const th = document.createElement('th');
                 th.contentEditable = "true";
                 th.textContent = header;
-                headerRow.appendChild(th);
+                headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 2]); // Sebelum "Selesai"
             });
             const doneTh = document.createElement('th');
             doneTh.textContent = 'Selesai';
