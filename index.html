@@ -2,185 +2,273 @@
 <html lang="id">
 
 <head>
-    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Aplikasi Manajemen Konten</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Halaman dan Tabel Dinamis</title>
     <style>
         body {
-            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
         }
 
         .sidebar {
-            height: 100%;
             width: 250px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #343a40;
-            padding-top: 20px;
-            transition: 0.3s;
+            height: 100vh;
             overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: white;
-            display: block;
-            transition: 0.3s;
+        .sidebar.closed {
+            transform: translateX(-100%);
         }
 
-        .sidebar a:hover {
-            background-color: #575757;
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
         }
 
-        .sidebar .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
             cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .open-btn {
-            font-size: 18px;
-            cursor: pointer;
-            background-color: #343a40;
+        .sidebar ul li:hover {
+            background-color: #555;
+        }
+
+        .sidebar button {
+            background-color: #28a745;
             color: white;
-            padding: 10px 15px;
+            padding: 10px;
             border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 16px;
         }
 
-        #main-content {
-            margin-left: 250px;
-            transition: margin-left 0.3s;
+        .sidebar button:hover {
+            background-color: #218838;
+        }
+
+        .main-content {
+            margin-left: 270px;
             padding: 20px;
+            flex-grow: 1;
+            background-color: #f8f9fa;
+            transition: margin-left 0.3s ease;
         }
 
-        .content-container {
+        .main-content.expanded {
+            margin-left: 20px;
+        }
+
+        .page {
             display: none;
         }
 
-        .content-container.active {
+        .page.active {
             display: block;
-        }
-
-        .btn {
-            margin-top: 10px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         table {
             width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        td,
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            /* Garis pada tabel */
+        }
+
         th {
-            text-align: center;
-            vertical-align: middle;
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .delete-page-btn {
+            color: #ff4d4f;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button {
+            border: none;
+            padding: 10px 15px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            color: white;
+        }
+
+        /* Variasi Warna Tombol */
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .toggle-sidebar-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            transition: left 0.3s ease;
+        }
+
+        .toggle-sidebar-btn.closed {
+            left: 20px;
         }
 
         @media (max-width: 768px) {
-            #main-content {
-                margin-left: 0;
-            }
-
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
+                transform: translateX(-100%);
             }
 
-            .sidebar a {
-                float: left;
-                text-align: center;
-                width: 100%;
+            .sidebar.open {
+                transform: translateX(0);
             }
 
-            .sidebar .close-btn {
-                position: relative;
-                top: 0;
-                right: 0;
+            .main-content {
+                margin-left: 20px;
+            }
+
+            .toggle-sidebar-btn.closed {
+                left: 10px;
             }
         }
 
         @media (max-width: 576px) {
-            .sidebar {
-                position: static;
-                width: 100%;
-                height: auto;
-                padding-top: 10px;
+
+            th,
+            td {
+                padding: 8px;
             }
 
-            #main-content {
-                margin-left: 0;
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .btn {
+            button {
+                padding: 8px 10px;
                 font-size: 14px;
             }
 
-            table,
-            th,
-            td {
-                font-size: 12px;
-                padding: 5px;
+            .sidebar h3 {
+                font-size: 20px;
             }
 
-            .sidebar a {
-                padding: 8px 10px;
-                font-size: 16px;
+            .sidebar button {
+                padding: 8px;
             }
 
-            .open-btn {
-                padding: 8px 10px;
-                font-size: 16px;
+            .sidebar ul li {
+                font-size: 14px;
+                padding: 8px;
             }
         }
 
         @media (max-width: 400px) {
-            .sidebar {
-                position: static;
-                width: 100%;
-                height: auto;
-                padding-top: 10px;
+            .sidebar h3 {
+                font-size: 18px;
             }
 
-            #main-content {
-                margin-left: 0;
-                padding: 5px;
+            .toggle-sidebar-btn {
+                font-size: 14px;
+                padding: 8px 10px;
             }
 
-            h1 {
-                font-size: 20px;
+            th,
+            td {
+                font-size: 12px;
+                padding: 6px;
             }
 
-            .btn {
+            button {
+                padding: 6px 8px;
                 font-size: 12px;
             }
 
-            table,
-            th,
-            td {
-                font-size: 10px;
-                padding: 3px;
+            .sidebar ul li {
+                font-size: 12px;
+                padding: 6px;
             }
 
-            .sidebar a {
-                padding: 6px 8px;
-                font-size: 14px;
-            }
-
-            .open-btn {
-                padding: 6px 8px;
+            .sidebar button {
+                padding: 8px;
                 font-size: 14px;
             }
         }
@@ -188,334 +276,306 @@
 </head>
 
 <body>
-    <div id="mySidebar" class="sidebar">
-        <span class="close-btn" onclick="closeNav()">&times;</span>
-        <a href="javascript:void(0)" onclick="showContent('schedule')">Jadwal Rutinitas Harian</a>
-        <a href="javascript:void(0)" onclick="showContent('tasks')">Tugas Kuliah</a>
-        <a href="javascript:void(0)" onclick="showContent('shopping')">Daftar Belanja</a>
-        <hr>
-        <h5 class="text-light pl-3">Konten Tambahan</h5>
-        <div id="additionalContentLinks"></div>
-        <button class="btn btn-primary btn-sm" onclick="addNewContent()">Tambah Konten</button>
+    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar">
+        <h3>Daftar Halaman</h3>
+        <ul id="page-list">
+            <!-- Daftar halaman akan ditampilkan di sini -->
+        </ul>
+        <button class="btn-success" onclick="addNewPage()">Tambah Halaman Baru</button>
     </div>
 
-    <div id="main-content">
-        <button class="open-btn" onclick="openNav()">&#9776; Menu</button>
-
-        <!-- Jadwal Rutinitas Harian -->
-        <div id="schedule" class="content-container active">
-            <h1 class="text-center mt-4">Jadwal Rutinitas Harian</h1>
-            <div class="row mt-5">
-                <div class="col-md-10 offset-md-1">
-                    <button class="btn btn-primary mb-3" onclick="addNewRow('schedule-table')">Tambah Baris</button>
-                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('schedule-table')">Tambah
-                        Kolom</button>
-                    <button class="btn btn-danger mb-3" onclick="removeContent('schedule')">Hapus Konten</button>
-                    <table class="table table-bordered table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th contentEditable="true">Waktu</th>
-                                <th contentEditable="true">Kegiatan</th>
-                                <th contentEditable="true">Rincian</th>
-                                <th>Selesai</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="schedule-table">
-                            <!-- Isi konten akan diisi di sini -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="main-content">
+        <div id="pages-container">
+            <!-- Halaman akan ditambahkan di sini -->
         </div>
-
-        <!-- Tugas Kuliah -->
-        <div id="tasks" class="content-container">
-            <h1 class="text-center mt-4">Tugas Kuliah</h1>
-            <div class="row mt-5">
-                <div class="col-md-10 offset-md-1">
-                    <button class="btn btn-primary mb-3" onclick="addNewRow('tasks-table')">Tambah Baris</button>
-                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('tasks-table')">Tambah Kolom</button>
-                    <button class="btn btn-danger mb-3" onclick="removeContent('tasks')">Hapus Konten</button>
-                    <table class="table table-bordered table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th contentEditable="true">Tugas</th>
-                                <th contentEditable="true">Keterangan</th>
-                                <th>Selesai</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tasks-table">
-                            <!-- Isi konten akan diisi di sini -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Daftar Belanja -->
-        <div id="shopping" class="content-container">
-            <h1 class="text-center mt-4">Daftar Belanja</h1>
-            <div class="row mt-5">
-                <div class="col-md-10 offset-md-1">
-                    <button class="btn btn-primary mb-3" onclick="addNewRow('shopping-table')">Tambah Baris</button>
-                    <button class="btn btn-secondary mb-3" onclick="addNewColumn('shopping-table')">Tambah
-                        Kolom</button>
-                    <button class="btn btn-danger mb-3" onclick="removeContent('shopping')">Hapus Konten</button>
-                    <table class="table table-bordered table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th contentEditable="true">Barang</th>
-                                <th contentEditable="true">Keterangan</th>
-                                <th>Selesai</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="shopping-table">
-                            <!-- Isi konten akan diisi di sini -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <!-- jQuery, Popper.js, and Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        function openNav() {
-            document.getElementById("mySidebar").style.width = "250px";
-            document.getElementById("main-content").style.marginLeft = "250px";
+        let pageCount = 0;
+
+        // Fungsi untuk toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+
+            sidebar.classList.toggle('closed');
+            sidebar.classList.toggle('open');
+            mainContent.classList.toggle('expanded');
+            toggleBtn.classList.toggle('closed');
         }
 
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-            document.getElementById("main-content").style.marginLeft = "0";
-        }
-
-        function showContent(contentId) {
-            const contents = document.querySelectorAll('.content-container');
-            contents.forEach(content => content.classList.remove('active'));
-            document.getElementById(contentId).classList.add('active');
-        }
-
-        function addNewRow(tableId) {
-            const tableBody = document.getElementById(tableId);
-            const row = document.createElement('tr');
-            const columns = tableBody.parentElement.querySelectorAll('thead th').length - 2; // Minus "Selesai" dan "Aksi"
-
-            for (let i = 0; i < columns; i++) {
-                const cell = document.createElement('td');
-                cell.contentEditable = "true";
-                row.appendChild(cell);
-            }
-
-            const doneCell = document.createElement('td');
-            doneCell.classList.add("checkbox-column");
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.classList.add("form-check-input");
-            doneCell.appendChild(checkbox);
-            row.appendChild(doneCell);
-
-            const actionsCell = document.createElement("td");
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Hapus";
-            deleteButton.classList.add("btn", "btn-danger", "btn-sm");
-            deleteButton.onclick = function () {
-                row.remove();
-                saveContent();
-            };
-            actionsCell.appendChild(deleteButton);
-            row.appendChild(actionsCell);
-
-            tableBody.appendChild(row);
-            saveContent();
-        }
-
-        function addNewColumn(tableId) {
-            const table = document.getElementById(tableId).parentElement;
-            const th = document.createElement('th');
-            th.contentEditable = "true";
-            th.textContent = `Kolom ${table.querySelectorAll('th').length - 1}`;
-            table.querySelector('thead tr').insertBefore(th, table.querySelector('th:nth-last-child(3)'));
-
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const td = document.createElement('td');
-                td.contentEditable = "true";
-                row.insertBefore(td, row.querySelector('td:nth-last-child(3)'));
-            });
-
-            saveContent();
-        }
-
-        function addNewContent() {
-            const contentName = prompt("Masukkan nama konten baru:");
-            if (contentName) {
-                const link = document.createElement("a");
-                link.href = "javascript:void(0)";
-                link.onclick = function () { showContent(contentName); };
-                link.textContent = contentName;
-                link.setAttribute("data-content-id", contentName);
-                document.getElementById("additionalContentLinks").appendChild(link);
-
-                const newContent = document.createElement("div");
-                newContent.id = contentName;
-                newContent.classList.add("content-container");
-                newContent.innerHTML = `<h1 class="text-center mt-4">${contentName}</h1>
-                <div class="row mt-5">
-                    <div class="col-md-10 offset-md-1">
-                        <button class="btn btn-primary mb-3" onclick="addNewRow('${contentName}-table')">Tambah Baris</button>
-                        <button class="btn btn-secondary mb-3" onclick="addNewColumn('${contentName}-table')">Tambah Kolom</button>
-                        <button class="btn btn-danger mb-3" onclick="removeContent('${contentName}')">Hapus Konten</button>
-                        <table class="table table-bordered table-striped">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th contentEditable="true">Kolom 1</th>
-                                    <th contentEditable="true">Kolom 2</th>
-                                    <th contentEditable="true">Kolom 3</th>
-                                    <th>Selesai</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="${contentName}-table"></tbody>
-                        </table>
-                    </div>
-                </div>`;
-                document.getElementById("main-content").appendChild(newContent);
-                saveContent();
-            }
-        }
-
-        function removeContent(contentName) {
-            if (confirm("Anda yakin ingin menghapus konten ini?")) {
-                document.getElementById(contentName).remove();
-                const sidebarLink = document.querySelector(`#additionalContentLinks a[data-content-id="${contentName}"]`);
-                if (sidebarLink) {
-                    sidebarLink.remove();
-                }
-                saveContent();
-            }
-        }
-
-        function saveContent() {
-            const contents = [];
-            document.querySelectorAll('.content-container').forEach(container => {
-                const contentData = {
-                    id: container.id,
-                    columns: [],
-                    tableRows: []
-                };
-                container.querySelectorAll('thead th').forEach((th, index) => {
-                    if (index < container.querySelectorAll('thead th').length - 2) {
-                        contentData.columns.push(th.textContent);
-                    }
-                });
-                container.querySelectorAll('tbody tr').forEach(row => {
-                    const rowData = {
-                        columns: [],
-                        done: row.querySelector('.checkbox-column input').checked
-                    };
-                    row.querySelectorAll('td').forEach((cell, index) => {
-                        if (index < row.querySelectorAll('td').length - 2) {
-                            rowData.columns.push(cell.textContent);
-                        }
-                    });
-                    contentData.tableRows.push(rowData);
-                });
-                contents.push(contentData);
-            });
-            localStorage.setItem('contentData', JSON.stringify(contents));
-
-            const additionalLinks = [];
-            document.querySelectorAll('#additionalContentLinks a').forEach(link => {
-                additionalLinks.push(link.outerHTML);
-            });
-            localStorage.setItem('additionalLinks', JSON.stringify(additionalLinks));
-        }
-
-        function loadContent() {
-            const savedContent = JSON.parse(localStorage.getItem('contentData')) || [];
-            const savedLinks = JSON.parse(localStorage.getItem('additionalLinks')) || [];
-
-            document.getElementById('additionalContentLinks').innerHTML = savedLinks.join("");
-
-            savedContent.forEach(contentData => {
-                const newContent = document.createElement('div');
-                newContent.id = contentData.id;
-                newContent.classList.add('content-container');
-                newContent.innerHTML = `<h1 class="text-center mt-4">${contentData.id}</h1>
-                <div class="row mt-5">
-                    <div class="col-md-10 offset-md-1">
-                        <button class="btn btn-primary mb-3" onclick="addNewRow('${contentData.id}-table')">Tambah Baris</button>
-                        <button class="btn btn-secondary mb-3" onclick="addNewColumn('${contentData.id}-table')">Tambah Kolom</button>
-                        <button class="btn btn-danger mb-3" onclick="removeContent('${contentData.id}')">Hapus Konten</button>
-                        <table class="table table-bordered table-striped">
-                            <thead class="thead-dark">
-                                <tr>${contentData.columns.map(col => `<th contentEditable="true">${col}</th>`).join('')}
-                                    <th>Selesai</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="${contentData.id}-table"></tbody>
-                        </table>
-                    </div>
-                </div>`;
-                document.getElementById('main-content').appendChild(newContent);
-
-                const tableBody = document.getElementById(`${contentData.id}-table`);
-                contentData.tableRows.forEach(rowData => {
-                    const row = document.createElement('tr');
-                    rowData.columns.forEach(columnData => {
-                        const cell = document.createElement('td');
-                        cell.contentEditable = "true";
-                        cell.textContent = columnData;
-                        row.appendChild(cell);
-                    });
-                    const doneCell = document.createElement('td');
-                    doneCell.classList.add('checkbox-column');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.classList.add('form-check-input');
-                    checkbox.checked = rowData.done;
-                    doneCell.appendChild(checkbox);
-                    row.appendChild(doneCell);
-
-                    const actionsCell = document.createElement('td');
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Hapus';
-                    deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
-                    deleteButton.onclick = function () {
-                        row.remove();
-                        saveContent();
-                    };
-                    actionsCell.appendChild(deleteButton);
-                    row.appendChild(actionsCell);
-
-                    tableBody.appendChild(row);
-                });
-            });
-        }
-
-        // Membersihkan konten tambahan pada halaman pertama kali dimuat
-        function clearAdditionalContent() {
-            localStorage.removeItem('contentData');
-            localStorage.removeItem('additionalLinks');
-            document.getElementById('additionalContentLinks').innerHTML = '';
-            loadContent();
-        }
-
+        // Muat daftar halaman saat pertama kali membuka halaman
         window.onload = function () {
-            clearAdditionalContent();
-            loadContent();
+            loadPages();
         };
 
-        window.onbeforeunload = saveContent;
+        // Fungsi untuk menambahkan halaman baru
+        function addNewPage() {
+            pageCount++;
+            const newPageId = `page-${pageCount}`;
+            const pageName = `Halaman ${pageCount}`;
+            addPageToSidebar(newPageId, pageName);
+            createPageContent(newPageId, pageName);
+            savePages();
+            showPage(newPageId);
+        }
+
+        // Fungsi untuk menambah halaman ke sidebar
+        function addPageToSidebar(pageId, pageName) {
+            const pageList = document.getElementById('page-list');
+            const listItem = document.createElement('li');
+            listItem.className = 'page-title';
+
+            const titleSpan = document.createElement('span');
+            titleSpan.textContent = pageName;
+            titleSpan.setAttribute('contentEditable', 'true');
+            titleSpan.onblur = function () {
+                renamePage(pageId, titleSpan.textContent);
+            };
+
+            const deleteBtn = document.createElement('span');
+            deleteBtn.className = 'delete-page-btn';
+            deleteBtn.innerHTML = '&#x2715;';
+            deleteBtn.onclick = function (event) {
+                deletePage(pageId, event);
+            };
+
+            listItem.appendChild(titleSpan);
+            listItem.appendChild(deleteBtn);
+            listItem.onclick = function (event) {
+                if (event.target !== deleteBtn) {
+                    showPage(pageId);
+                }
+            };
+            listItem.setAttribute('data-page-id', pageId);
+            pageList.appendChild(listItem);
+        }
+
+        // Fungsi untuk mengganti nama halaman
+        function renamePage(pageId, newName) {
+            const savedPages = JSON.parse(localStorage.getItem('pages')) || [];
+            for (let i = 0; i < savedPages.length; i++) {
+                if (savedPages[i].id === pageId) {
+                    savedPages[i].name = newName;
+                    break;
+                }
+            }
+            localStorage.setItem('pages', JSON.stringify(savedPages));
+
+            // Update judul halaman di konten tabel
+            const pageTitle = document.querySelector(`#${pageId} h2`);
+            if (pageTitle) {
+                pageTitle.textContent = newName;
+            }
+        }
+
+        // Fungsi untuk membuat konten halaman baru
+        function createPageContent(pageId, pageName) {
+            const newPage = document.createElement('div');
+            newPage.id = pageId;
+            newPage.classList.add('page');
+            newPage.innerHTML = `
+                <h2>${pageName}</h2>
+                <button class="btn-primary" onclick="addRow('${pageId}')">Tambah Baris</button>
+                <button class="btn-warning" onclick="addColumn('${pageId}')">Tambah Kolom</button>
+                <button class="btn-success" onclick="saveTable('${pageId}')">Simpan Tabel</button>
+                <table id="data-table-${pageId}">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Usia</th>
+                            <th>Selesai</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Baris tabel akan ditambahkan di sini -->
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('pages-container').appendChild(newPage);
+            loadTable(pageId); // Muat data jika sudah ada di localStorage
+        }
+
+        // Fungsi untuk menampilkan halaman yang dipilih
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Fungsi untuk menambahkan baris baru ke tabel
+        function addRow(pageId) {
+            const table = document.getElementById(`data-table-${pageId}`).getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            const columns = document.getElementById(`data-table-${pageId}`).rows[0].cells.length - 2; // Minus "Selesai" dan "Aksi"
+
+            for (let i = 0; i < columns; i++) {
+                const newCell = newRow.insertCell(i);
+                newCell.contentEditable = "true";
+            }
+
+            const checkCell = newRow.insertCell(columns);
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.onchange = function () { saveTable(pageId); };
+            checkCell.appendChild(checkbox);
+
+            const actionCell = newRow.insertCell(columns + 1);
+            actionCell.innerHTML = '<button class="btn-danger" onclick="deleteRow(this, \'' + pageId + '\')">Hapus</button>';
+        }
+
+        // Fungsi untuk menambahkan kolom baru ke tabel
+        function addColumn(pageId) {
+            const table = document.getElementById(`data-table-${pageId}`);
+            const headerRow = table.rows[0];
+            const newHeader = document.createElement('th');
+            newHeader.contentEditable = "true";
+            headerRow.insertBefore(newHeader, headerRow.cells[headerRow.cells.length - 2]); // Sebelum "Selesai"
+
+            for (let i = 1; i < table.rows.length; i++) { // Mulai dari baris kedua (tbody)
+                const newCell = table.rows[i].insertCell(headerRow.cells.length - 3); // Sebelum "Selesai"
+                newCell.contentEditable = "true";
+            }
+        }
+
+        // Fungsi untuk menghapus baris
+        function deleteRow(button, pageId) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            saveTable(pageId); // Simpan tabel setiap kali ada perubahan
+        }
+
+        // Fungsi untuk menyimpan tabel ke localStorage
+        function saveTable(pageId) {
+            const table = document.getElementById(`data-table-${pageId}`);
+            const rows = table.getElementsByTagName('tbody')[0].rows;
+            const headers = [];
+            const data = [];
+
+            // Simpan header tabel
+            for (let i = 0; i < table.rows[0].cells.length - 2; i++) { // Minus "Selesai" dan "Aksi"
+                headers.push(table.rows[0].cells[i].textContent);
+            }
+
+            // Simpan isi tabel
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const rowData = [];
+                for (let j = 0; j < row.cells.length - 2; j++) { // Minus "Selesai" dan "Aksi"
+                    rowData.push(row.cells[j].textContent);
+                }
+                const done = row.cells[row.cells.length - 2].children[0].checked;
+                rowData.push(done);
+                data.push(rowData);
+            }
+
+            localStorage.setItem(`tableData-${pageId}`, JSON.stringify({ headers, data }));
+            alert('Tabel pada ' + pageId + ' berhasil disimpan.');
+        }
+
+        // Fungsi untuk memuat data tabel dari localStorage
+        function loadTable(pageId) {
+            const savedTable = JSON.parse(localStorage.getItem(`tableData-${pageId}`));
+            if (!savedTable) return;
+
+            const table = document.getElementById(`data-table-${pageId}`);
+            const headerRow = table.getElementsByTagName('thead')[0].rows[0];
+
+            // Muat header
+            headerRow.innerHTML = '';
+            savedTable.headers.forEach(header => {
+                const th = document.createElement('th');
+                th.contentEditable = "true";
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            const doneTh = document.createElement('th');
+            doneTh.textContent = 'Selesai';
+            headerRow.appendChild(doneTh);
+            const actionTh = document.createElement('th');
+            actionTh.textContent = 'Aksi';
+            headerRow.appendChild(actionTh);
+
+            // Muat data
+            const tbody = table.getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; // Kosongkan tbody
+            savedTable.data.forEach(rowData => {
+                const newRow = tbody.insertRow();
+                rowData.slice(0, -1).forEach(cellData => {
+                    const newCell = newRow.insertCell();
+                    newCell.contentEditable = "true";
+                    newCell.textContent = cellData;
+                });
+                const doneCell = newRow.insertCell();
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = rowData[rowData.length - 1];
+                checkbox.onchange = function () { saveTable(pageId); };
+                doneCell.appendChild(checkbox);
+                const actionCell = newRow.insertCell();
+                actionCell.innerHTML = '<button class="btn-danger" onclick="deleteRow(this, \'' + pageId + '\')">Hapus</button>';
+            });
+        }
+
+        // Fungsi untuk menyimpan daftar halaman ke localStorage
+        function savePages() {
+            const pages = [];
+            const pageList = document.getElementById('page-list').children;
+            for (let i = 0; i < pageList.length; i++) {
+                const pageId = pageList[i].getAttribute('data-page-id');
+                const pageName = pageList[i].querySelector('span').textContent; // Hanya ambil nama halaman
+                pages.push({ id: pageId, name: pageName });
+            }
+            localStorage.setItem('pages', JSON.stringify(pages));
+        }
+
+        // Fungsi untuk memuat daftar halaman dari localStorage
+        function loadPages() {
+            const savedPages = JSON.parse(localStorage.getItem('pages')) || [];
+            savedPages.forEach(page => {
+                pageCount = parseInt(page.id.split('-')[1]); // Update pageCount
+                addPageToSidebar(page.id, page.name);
+                createPageContent(page.id, page.name);
+            });
+            if (savedPages.length > 0) {
+                showPage(savedPages[0].id); // Tampilkan halaman pertama yang dimuat
+            }
+        }
+
+        // Fungsi untuk menghapus halaman dan tabel dari sidebar dan localStorage
+        function deletePage(pageId, event) {
+            event.stopPropagation(); // Mencegah fungsi showPage dijalankan
+
+            if (confirm('Apakah Anda yakin ingin menghapus halaman ini? Semua data akan hilang.')) {
+                // Hapus halaman dari sidebar
+                const pageList = document.getElementById('page-list');
+                const pageItem = pageList.querySelector(`[data-page-id="${pageId}"]`);
+                pageItem.remove();
+
+                // Hapus halaman dari konten
+                const pageContent = document.getElementById(pageId);
+                pageContent.remove();
+
+                // Hapus data dari localStorage
+                localStorage.removeItem(`tableData-${pageId}`);
+
+                // Update dan simpan daftar halaman
+                savePages();
+
+                // Jika ada halaman lain, tampilkan halaman pertama dalam daftar
+                const remainingPages = document.getElementById('page-list').children;
+                if (remainingPages.length > 0) {
+                    showPage(remainingPages[0].getAttribute('data-page-id'));
+                } else {
+                    pageCount = 0; // Reset pageCount jika tidak ada halaman tersisa
+                }
+            }
+        }
+
     </script>
 </body>
 
