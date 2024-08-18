@@ -201,19 +201,46 @@
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 10px;
+            /* Kurangi padding agar lebih pas */
             cursor: pointer;
             border-radius: 5px;
             position: fixed;
             top: 10px;
             left: 10px;
             z-index: 1001;
-            transition: left 0.3s ease;
+            width: 38px;
+            /* Lebar lebih kecil */
+            height: 40px;
+            /* Tinggi lebih kecil */
+            text-align: center;
+            /* Pastikan teks di tengah */
+            font-size: 20px;
+            /* Pastikan ukuran font sesuai */
+            line-height: 40px;
+            /* Membuat simbol vertikal terpusat */
         }
 
         .toggle-sidebar-btn.closed {
             left: 20px;
         }
+
+        @media (max-width: 576px) {
+            .toggle-sidebar-btn {
+                width: 40px;
+                /* Tetapkan lebar tetap */
+                height: 40px;
+                /* Tetapkan tinggi tetap */
+                left: 10px;
+                /* Pastikan tetap di posisi yang benar */
+                font-size: 20px;
+                /* Pastikan ukuran font sesuai */
+                line-height: 40px;
+                /* Simbol terpusat vertikal */
+            }
+        }
+
+
 
         /* Footer Style */
         footer {
