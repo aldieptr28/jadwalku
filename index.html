@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Halaman dan Tabel Dinamis</title>
+    <title>Aldi Manage</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -261,8 +261,6 @@
             }
         }
 
-
-
         /* Footer Style */
         footer {
             background-color: #333;
@@ -351,10 +349,104 @@
                 font-size: 14px;
             }
         }
+
+        /* Form Login */
+        #login-form {
+            display: none;
+            /* Sembunyikan form saat halaman dimuat */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1002;
+        }
+
+        #login-form h2 {
+            margin-bottom: 20px;
+        }
+
+        #login-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #login-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #login-form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Penyesuaian untuk form login di layar kecil */
+        @media (max-width: 576px) {
+            #login-form {
+                width: 90%;
+                padding: 15px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            #login-form h2 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            #login-form label {
+                font-size: 14px;
+            }
+
+            #login-form input {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            #login-form button {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+
+
+        /* Styles untuk konten utama, yang akan disembunyikan saat login */
+        body.logged-in .main-content,
+        body.logged-in .sidebar {
+            display: block;
+        }
+
+        body:not(.logged-in) .main-content,
+        body:not(.logged-in) .sidebar {
+            display: none;
+        }
     </style>
 </head>
 
-<body>
+<body class="not-logged-in">
+    <!-- Form Login -->
+    <div id="login-form">
+        <h2>Login</h2>
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan Username">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan Password">
+        <button onclick="login()">Login</button>
+    </div>
+
     <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
     <div class="sidebar">
         <h3>Daftar Halaman</h3>
@@ -377,6 +469,21 @@
     <script>
         let pageCount = 0;
 
+        // Fungsi Login
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'altra2283') {
+                document.body.classList.remove('not-logged-in');
+                document.body.classList.add('logged-in');
+                document.getElementById('login-form').style.display = 'none';
+                loadPages();
+            } else {
+                alert('Username atau Password salah!');
+            }
+        }
+
         // Fungsi untuk toggle sidebar
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
@@ -388,11 +495,6 @@
             mainContent.classList.toggle('expanded');
             toggleBtn.classList.toggle('closed');
         }
-
-        // Muat daftar halaman saat pertama kali membuka halaman
-        window.onload = function () {
-            loadPages();
-        };
 
         // Fungsi untuk menambahkan halaman baru
         function addNewPage() {
@@ -657,6 +759,11 @@
             }
         }
 
+        // Muat daftar halaman saat pertama kali membuka halaman
+        window.onload = function () {
+            // Tampilkan form login saat halaman dimuat
+            document.getElementById('login-form').style.display = 'block';
+        };
     </script>
 </body>
 
