@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aldi Manage</title>
+    <title>Manajemen Halaman dan Tabel Dinamis</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -15,6 +15,51 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10%;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .login-error {
+            color: red;
+            margin-bottom: 15px;
+            display: none;
         }
 
         .sidebar {
@@ -29,6 +74,7 @@
             overflow-y: auto;
             transition: transform 0.3s ease;
             z-index: 1000;
+            display: none;
         }
 
         .sidebar.closed {
@@ -84,6 +130,7 @@
             flex-grow: 1;
             background-color: #f8f9fa;
             transition: margin-left 0.3s ease;
+            display: none;
         }
 
         .main-content.expanded {
@@ -96,26 +143,33 @@
 
         .page.active {
             display: block;
-            background-color: white;
+            background-color: #ffffff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
-            /* Agar bisa scroll secara horizontal */
-            width: 100%;
-            /* Full lebar */
+            position: relative;
+        }
+
+        .table-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: relative;
+            min-width: 100%;
         }
 
         table {
             width: 100%;
-            max-width: 100%;
-            /* Pastikan tidak melebihi kontainer */
             border-collapse: collapse;
             margin-top: 20px;
             background-color: white;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 5px;
             overflow: hidden;
+            white-space: nowrap;
         }
 
         th,
@@ -135,21 +189,6 @@
             background-color: #f2f2f2;
         }
 
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            font-size: 14px;
-            margin-top: auto;
-            clear: both;
-            /* Agar footer tidak terhalangi */
-        }
-
-
         .delete-page-btn {
             color: #ff4d4f;
             cursor: pointer;
@@ -160,12 +199,11 @@
             border: none;
             padding: 10px 15px;
             margin-right: 5px;
-            margin-bottom: 10px;
-            /* Tambahkan margin bawah untuk jarak vertikal */
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s ease;
             color: white;
+            margin-bottom: 10px;
         }
 
         /* Variasi Warna Tombol */
@@ -202,76 +240,35 @@
             background-color: #c82333;
         }
 
-        /* Untuk mode ponsel atau layar kecil */
-        @media (max-width: 576px) {
-            button {
-                padding: 8px 10px;
-                margin-right: 0;
-                /* Atur jarak horizontal untuk ponsel */
-                margin-bottom: 10px;
-                /* Atur jarak vertikal */
-                display: block;
-                /* Biar tombol berjejer vertikal */
-                width: 100%;
-                /* Buat tombol menjadi selebar container */
-            }
-        }
-
-
         .toggle-sidebar-btn {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 8px 10px;
-            /* Kurangi padding agar lebih pas */
+            padding: 10px 15px;
             cursor: pointer;
             border-radius: 5px;
             position: fixed;
             top: 10px;
             left: 10px;
             z-index: 1001;
-            width: 38px;
-            /* Lebar lebih kecil */
-            height: 40px;
-            /* Tinggi lebih kecil */
-            text-align: center;
-            /* Pastikan teks di tengah */
-            font-size: 20px;
-            /* Pastikan ukuran font sesuai */
-            line-height: 40px;
-            /* Membuat simbol vertikal terpusat */
+            transition: left 0.3s ease;
+            display: none;
         }
 
         .toggle-sidebar-btn.closed {
             left: 20px;
         }
 
-        @media (max-width: 576px) {
-            .toggle-sidebar-btn {
-                width: 40px;
-                /* Tetapkan lebar tetap */
-                height: 40px;
-                /* Tetapkan tinggi tetap */
-                left: 10px;
-                /* Pastikan tetap di posisi yang benar */
-                font-size: 20px;
-                /* Pastikan ukuran font sesuai */
-                line-height: 40px;
-                /* Simbol terpusat vertikal */
-            }
-        }
-
-        /* Footer Style */
-        footer {
+        .footer {
             background-color: #333;
             color: white;
             text-align: center;
             padding: 10px 0;
-            position: relative;
+            position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
-            font-size: 14px;
-            margin-top: auto;
+            z-index: 999;
         }
 
         @media (max-width: 768px) {
@@ -289,6 +286,12 @@
 
             .toggle-sidebar-btn.closed {
                 left: 10px;
+            }
+
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
@@ -315,6 +318,12 @@
             .sidebar ul li {
                 font-size: 14px;
                 padding: 8px;
+            }
+
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
@@ -348,107 +357,28 @@
                 padding: 8px;
                 font-size: 14px;
             }
-        }
 
-        /* Form Login */
-        #login-form {
-            display: none;
-            /* Sembunyikan form saat halaman dimuat */
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1002;
-        }
-
-        #login-form h2 {
-            margin-bottom: 20px;
-        }
-
-        #login-form label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        #login-form input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        #login-form button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        /* Penyesuaian untuk form login di layar kecil */
-        @media (max-width: 576px) {
-            #login-form {
-                width: 90%;
-                padding: 15px;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
             }
-
-            #login-form h2 {
-                font-size: 20px;
-                margin-bottom: 15px;
-            }
-
-            #login-form label {
-                font-size: 14px;
-            }
-
-            #login-form input {
-                font-size: 14px;
-                padding: 8px;
-            }
-
-            #login-form button {
-                font-size: 16px;
-                padding: 10px;
-            }
-        }
-
-
-        /* Styles untuk konten utama, yang akan disembunyikan saat login */
-        body.logged-in .main-content,
-        body.logged-in .sidebar {
-            display: block;
-        }
-
-        body:not(.logged-in) .main-content,
-        body:not(.logged-in) .sidebar {
-            display: none;
         }
     </style>
 </head>
 
-<body class="not-logged-in">
-    <!-- Form Login -->
-    <div id="login-form">
+<body>
+    <div class="login-container" id="login-container">
         <h2>Login</h2>
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Masukkan Username">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Masukkan Password">
+        <div class="login-error" id="login-error">Username atau password salah!</div>
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
         <button onclick="login()">Login</button>
     </div>
 
-    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
-    <div class="sidebar">
+    <button class="toggle-sidebar-btn" id="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
+
+    <div class="sidebar" id="sidebar">
         <h3>Daftar Halaman</h3>
         <ul id="page-list">
             <!-- Daftar halaman akan ditampilkan di sini -->
@@ -456,45 +386,66 @@
         <button class="btn-success" onclick="addNewPage()">Tambah Halaman Baru</button>
     </div>
 
-    <div class="main-content">
+    <div class="main-content" id="main-content">
         <div id="pages-container">
             <!-- Halaman akan ditambahkan di sini -->
         </div>
     </div>
 
-    <footer>
-        Dibuat oleh Aldi Putra Pratama
-    </footer>
+    <div class="footer">
+        Dibuat Oleh Aldi Putra Pratama
+    </div>
 
     <script>
         let pageCount = 0;
 
-        // Fungsi Login
+        // Fungsi login
         function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (username === 'admin' && password === 'altra2283') {
-                document.body.classList.remove('not-logged-in');
-                document.body.classList.add('logged-in');
-                document.getElementById('login-form').style.display = 'none';
-                loadPages();
+            if (username === "admin" && password === "altra2283") {
+                // Sembunyikan form login dan tampilkan halaman utama
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('sidebar').style.display = 'block';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('toggle-sidebar-btn').style.display = 'block';
+                sessionStorage.setItem('isLoggedIn', 'true');
+                loadPages(); // Muat halaman yang sudah ada setelah login
             } else {
-                alert('Username atau Password salah!');
+                document.getElementById('login-error').style.display = 'block';
             }
         }
 
         // Fungsi untuk toggle sidebar
         function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
-            const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('toggle-sidebar-btn');
 
             sidebar.classList.toggle('closed');
             sidebar.classList.toggle('open');
             mainContent.classList.toggle('expanded');
             toggleBtn.classList.toggle('closed');
         }
+
+        // Muat daftar halaman saat pertama kali membuka halaman
+        window.onload = function () {
+            // Hapus status login setiap kali halaman dimuat
+            sessionStorage.removeItem('isLoggedIn');
+
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+
+            if (isLoggedIn === 'true') {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('sidebar').style.display = 'block';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('toggle-sidebar-btn').style.display = 'block';
+                loadPages();
+            } else {
+                document.getElementById('login-container').style.display = 'block';
+            }
+        };
 
         // Fungsi untuk menambahkan halaman baru
         function addNewPage() {
@@ -563,20 +514,25 @@
             newPage.classList.add('page');
             newPage.innerHTML = `
                 <h2>${pageName}</h2>
-                <button class="btn-primary" onclick="addRow('${pageId}')">Tambah Baris</button>
-                <button class="btn-warning" onclick="addColumn('${pageId}')">Tambah Kolom</button>
-                <button class="btn-success" onclick="saveTable('${pageId}')">Simpan Tabel</button>
-                <table id="data-table-${pageId}">
-                    <thead>
-                        <tr>
-                            <th>Selesai</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Baris tabel akan ditambahkan di sini -->
-                    </tbody>
-                </table>
+                <div class="btn-container">
+                    <button class="btn-primary" onclick="addRow('${pageId}')">Tambah Baris</button>
+                    <button class="btn-warning" onclick="addColumn('${pageId}')">Tambah Kolom</button>
+                    <button class="btn-success" onclick="saveTable('${pageId}')">Simpan Tabel</button>
+                </div>
+                <div class="table-container">
+                    <table id="data-table-${pageId}">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Selesai</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Baris tabel akan ditambahkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
             `;
             document.getElementById('pages-container').appendChild(newPage);
             loadTable(pageId); // Muat data jika sudah ada di localStorage
@@ -674,7 +630,7 @@
                 const th = document.createElement('th');
                 th.contentEditable = "true";
                 th.textContent = header;
-                headerRow.insertBefore(th, headerRow.cells[headerRow.cells.length - 2]); // Sebelum "Selesai"
+                headerRow.appendChild(th);
             });
             const doneTh = document.createElement('th');
             doneTh.textContent = 'Selesai';
@@ -759,11 +715,6 @@
             }
         }
 
-        // Muat daftar halaman saat pertama kali membuka halaman
-        window.onload = function () {
-            // Tampilkan form login saat halaman dimuat
-            document.getElementById('login-form').style.display = 'block';
-        };
     </script>
 </body>
 
