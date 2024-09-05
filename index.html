@@ -418,6 +418,31 @@
             background-color: #222;
             color: white;
         }
+
+/*         print */
+
+        @media print {
+    @page {
+        margin: 20mm;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .print-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-style: italic;
+    }
+}
+
+.btn-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
     </style>
 </head>
 
@@ -787,6 +812,122 @@
                 }
             }
         }
+// fitur print
+function createPageContent(pageId, pageName) {
+    const newPage = document.createElement('div');
+    newPage.id = pageId;
+    newPage.classList.add('page');
+    newPage.innerHTML = `
+        <h2>${pageName}</h2>
+        <div class="btn-container">
+            <button class="btn-primary" onclick="addRow('${pageId}')">Tambah Baris</button>
+            <button class="btn-warning" onclick="addColumn('${pageId}')">Tambah Kolom</button>
+            <button class="btn-success" onclick="saveTable('${pageId}')">Simpan Tabel</button>
+            <button class="btn-danger" onclick="printPage('${pageId}')">Print</button> <!-- Tombol Print -->
+        </div>
+        <div class="table-container">
+            <table id="data-table-${pageId}">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Selesai</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Baris tabel akan ditambahkan di sini -->
+                </tbody>
+            </table>
+        </div>
+    `;
+    document.getElementById('pages-container').appendChild(newPage);
+    loadTable(pageId); // Muat data jika sudah ada di localStorage
+}
+
+
+function printPage(pageId) {
+    const pageTitle = document.querySelector(`#${pageId} h2`).textContent;
+    const table = document.getElementById(`data-table-${pageId}`);
+    const clonedTable = table.cloneNode(true); // Clone tabel untuk manipulasi
+
+    // Hapus kolom aksi sebelum di-print
+    const actionIndex = clonedTable.rows[0].cells.length - 1; // Index kolom "Aksi"
+    for (let i = 0; i < clonedTable.rows.length; i++) {
+        clonedTable.rows[i].deleteCell(actionIndex);
+    }
+
+    const newWindow = window.open('', '_blank'); // Buka jendela baru untuk print
+
+    // CSS untuk pengaturan tampilan print
+    const style = `
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            th {
+                background-color: #add8e6; /* Warna biru muda untuk heading */
+                color: black;
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #000;
+            }
+            td {
+                padding: 10px;
+                border: 1px solid #000;
+                text-align: left;
+            }
+            .print-footer {
+                text-align: center;
+                margin-top: 20px;
+                font-style: italic;
+            }
+            @media print {
+                @page {
+                    size: auto;
+                    margin: 20mm;
+                }
+                table {
+                    page-break-inside: auto;
+                }
+                tr {
+                    page-break-inside: avoid;
+                    page-break-after: auto;
+                }
+                .no-print {
+                    display: none;
+                }
+            }
+        </style>
+    `;
+
+    // Menambahkan konten ke jendela baru
+    newWindow.document.write(`
+        <html>
+        <head>
+            <title>${pageTitle}</title>
+            ${style}
+        </head>
+        <body>
+            <h2>${pageTitle}</h2>
+            ${clonedTable.outerHTML}
+            <div class="print-footer">dibuat oleh aldi putra pratama</div>
+        </body>
+        </html>
+    `);
+
+    newWindow.document.close(); // Tutup dokumen agar bisa di-render
+    newWindow.print(); // Panggil fungsi print
+}
 
     </script>
 </body>
