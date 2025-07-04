@@ -17,6 +17,51 @@
             min-height: 100vh;
         }
 
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10%;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .login-container input {
+          width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        } 
+
+   .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .login-error {
+            color: red;
+            margin-bottom: 15px;
+            display: none;
+        }
+
         .sidebar {
             width: 250px;
             background-color: #333;
@@ -29,6 +74,7 @@
             overflow-y: auto;
             transition: transform 0.3s ease;
             z-index: 1000;
+            display: none;
         }
 
         .sidebar.closed {
@@ -84,6 +130,11 @@
             flex-grow: 1;
             background-color: #f8f9fa;
             transition: margin-left 0.3s ease;
+            display: none;
+        }
+
+        .main-content.expanded {
+            margin-left: 20px;
         }
 
         .page {
@@ -126,6 +177,7 @@
             padding: 12px;
             text-align: left;
             border: 1px solid #ddd;
+            /* Garis pada tabel */
         }
 
         th {
@@ -154,6 +206,7 @@
             margin-bottom: 10px;
         }
 
+        /* Variasi Warna Tombol */
         .btn-primary {
             background-color: #007bff;
         }
@@ -199,6 +252,7 @@
             left: 10px;
             z-index: 1001;
             transition: left 0.3s ease;
+            display: none;
         }
 
         .toggle-sidebar-btn.closed {
@@ -233,10 +287,94 @@
             .toggle-sidebar-btn.closed {
                 left: 10px;
             }
+
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            th,
+            td {
+                padding: 8px;
+            }
+
+            button {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+
+            .sidebar h3 {
+                font-size: 20px;
+            }
+
+            .sidebar button {
+                padding: 8px;
+            }
+
+            .sidebar ul li {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .sidebar h3 {
+                font-size: 18px;
+            }
+
+            .toggle-sidebar-btn {
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+
+            th,
+            td {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            button {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .sidebar ul li {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .sidebar button {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .btn-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
         .dark-mode {
             background-color: #333;
+            color: #fff;
+        }
+
+        .dark-mode .login-container,
+        .dark-mode .main-content,
+        .dark-mode .page,
+        .dark-mode .table-container {
+            background-color: #444;
             color: #fff;
         }
 
@@ -259,15 +397,64 @@
             color: #fff;
         }
 
+        .dark-mode .btn-primary {
+            background-color: #007bff;
+        }
+
+        .dark-mode .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .dark-mode .btn-success {
+            background-color: #28a745;
+        }
+
+        .dark-mode .btn-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
         .dark-mode .footer {
             background-color: #222;
             color: white;
         }
 
+/*         print */
+
+        @media print {
+    @page {
+        margin: 20mm;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .print-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-style: italic;
+    }
+}
+
+.btn-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
     </style>
 </head>
 
 <body>
+    <div class="login-container" id="login-container">
+        <h2>Login</h2>
+        <div class="login-error" id="login-error">Username atau password salah!</div>
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button onclick="login()">Login</button>
+    </div>
+
     <button class="toggle-sidebar-btn" id="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
 
     <div class="sidebar" id="sidebar">
@@ -293,6 +480,24 @@
     <script>
         let pageCount = 0;
 
+        Fungsi login
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === "admin" && password === "admin") {
+                // Sembunyikan form login dan tampilkan halaman utama
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('sidebar').style.display = 'block';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('toggle-sidebar-btn').style.display = 'block';
+                sessionStorage.setItem('isLoggedIn', 'true');
+                loadPages(); // Muat halaman yang sudah ada setelah login
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
         // Fungsi untuk toggle sidebar
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -305,14 +510,29 @@
             toggleBtn.classList.toggle('closed');
         }
 
-        // Cek status dark mode saat halaman dimuat
+        Muat daftar halaman saat pertama kali membuka halaman
         window.onload = function () {
+            // Hapus status login setiap kali halaman dimuat
+            sessionStorage.removeItem('isLoggedIn');
+
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+
+            if (isLoggedIn === 'true') {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('sidebar').style.display = 'block';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('toggle-sidebar-btn').style.display = 'block';
+                loadPages();
+            } else {
+                document.getElementById('login-container').style.display = 'block';
+            }
+
+            // Cek status dark mode
             const darkModeStatus = localStorage.getItem('darkMode');
             if (darkModeStatus === 'enabled') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('darkModeToggle').checked = true;
             }
-            loadPages(); // Muat halaman yang sudah ada
         };
 
         // Fungsi untuk toggle dark mode
@@ -423,6 +643,49 @@
             document.getElementById(pageId).classList.add('active');
         }
 
+        // Fungsi untuk menambahkan baris baru ke tabel
+        function addRow(pageId) {
+            const table = document.getElementById(`data-table-${pageId}`).getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            const columns = document.getElementById(`data-table-${pageId}`).rows[0].cells.length - 2; // Minus "Selesai" dan "Aksi"
+
+            for (let i = 0; i < columns; i++) {
+                const newCell = newRow.insertCell(i);
+                newCell.contentEditable = "true";
+            }
+
+            const checkCell = newRow.insertCell(columns);
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.onchange = function () { saveTable(pageId); };
+            checkCell.appendChild(checkbox);
+
+            const actionCell = newRow.insertCell(columns + 1);
+            actionCell.innerHTML = '<button class="btn-danger" onclick="deleteRow(this, \'' + pageId + '\')">Hapus</button>';
+        }
+
+        // Fungsi untuk menambahkan kolom baru ke tabel
+        function addColumn(pageId) {
+            const table = document.getElementById(`data-table-${pageId}`);
+            const headerRow = table.rows[0];
+            const newHeader = document.createElement('th');
+            newHeader.contentEditable = "true";
+            headerRow.insertBefore(newHeader, headerRow.cells[headerRow.cells.length - 2]); // Sebelum "Selesai"
+
+            for (let i = 1; i < table.rows.length; i++) { // Mulai dari baris kedua (tbody)
+                const newCell = table.rows[i].insertCell(headerRow.cells.length - 3); // Sebelum "Selesai"
+                newCell.contentEditable = "true";
+            }
+        }
+
+        // Fungsi untuk menghapus baris
+        function deleteRow(button, pageId) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            saveTable(pageId); // Simpan tabel setiap kali ada perubahan
+        }
+
         // Fungsi untuk menyimpan tabel ke localStorage
         function saveTable(pageId) {
             const table = document.getElementById(`data-table-${pageId}`);
@@ -431,7 +694,7 @@
             const data = [];
 
             // Simpan header tabel
-            for (let i = 0; i < table.rows[0].cells.length - 2; i++) {
+            for (let i = 0; i < table.rows[0].cells.length - 2; i++) { // Minus "Selesai" dan "Aksi"
                 headers.push(table.rows[0].cells[i].textContent);
             }
 
@@ -439,7 +702,7 @@
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const rowData = [];
-                for (let j = 0; j < row.cells.length - 2; j++) {
+                for (let j = 0; j < row.cells.length - 2; j++) { // Minus "Selesai" dan "Aksi"
                     rowData.push(row.cells[j].textContent);
                 }
                 const done = row.cells[row.cells.length - 2].children[0].checked;
@@ -495,6 +758,18 @@
             });
         }
 
+        // Fungsi untuk menyimpan daftar halaman ke localStorage
+        function savePages() {
+            const pages = [];
+            const pageList = document.getElementById('page-list').children;
+            for (let i = 0; i < pageList.length; i++) {
+                const pageId = pageList[i].getAttribute('data-page-id');
+                const pageName = pageList[i].querySelector('span').textContent; // Hanya ambil nama halaman
+                pages.push({ id: pageId, name: pageName });
+            }
+            localStorage.setItem('pages', JSON.stringify(pages));
+        }
+
         // Fungsi untuk memuat daftar halaman dari localStorage
         function loadPages() {
             const savedPages = JSON.parse(localStorage.getItem('pages')) || [];
@@ -506,18 +781,6 @@
             if (savedPages.length > 0) {
                 showPage(savedPages[0].id); // Tampilkan halaman pertama yang dimuat
             }
-        }
-
-        // Fungsi untuk menyimpan daftar halaman ke localStorage
-        function savePages() {
-            const pages = [];
-            const pageList = document.getElementById('page-list').children;
-            for (let i = 0; i < pageList.length; i++) {
-                const pageId = pageList[i].getAttribute('data-page-id');
-                const pageName = pageList[i].querySelector('span').textContent; // Hanya ambil nama halaman
-                pages.push({ id: pageId, name: pageName });
-            }
-            localStorage.setItem('pages', JSON.stringify(pages));
         }
 
         // Fungsi untuk menghapus halaman dan tabel dari sidebar dan localStorage
@@ -549,6 +812,123 @@
                 }
             }
         }
+// fitur print
+function createPageContent(pageId, pageName) {
+    const newPage = document.createElement('div');
+    newPage.id = pageId;
+    newPage.classList.add('page');
+    newPage.innerHTML = `
+        <h2>${pageName}</h2>
+        <div class="btn-container">
+            <button class="btn-primary" onclick="addRow('${pageId}')">Tambah Baris</button>
+            <button class="btn-warning" onclick="addColumn('${pageId}')">Tambah Kolom</button>
+            <button class="btn-success" onclick="saveTable('${pageId}')">Simpan Tabel</button>
+            <button class="btn-danger" onclick="printPage('${pageId}')">Print</button> <!-- Tombol Print -->
+        </div>
+        <div class="table-container">
+            <table id="data-table-${pageId}">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Selesai</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Baris tabel akan ditambahkan di sini -->
+                </tbody>
+            </table>
+        </div>
+    `;
+    document.getElementById('pages-container').appendChild(newPage);
+    loadTable(pageId); // Muat data jika sudah ada di localStorage
+}
+
+
+function printPage(pageId) {
+    const pageTitle = document.querySelector(`#${pageId} h2`).textContent;
+    const table = document.getElementById(`data-table-${pageId}`);
+    const clonedTable = table.cloneNode(true); // Clone tabel untuk manipulasi
+
+    // Hapus kolom aksi sebelum di-print
+    const actionIndex = clonedTable.rows[0].cells.length - 1; // Index kolom "Aksi"
+    for (let i = 0; i < clonedTable.rows.length; i++) {
+        clonedTable.rows[i].deleteCell(actionIndex);
+    }
+
+    const newWindow = window.open('', '_blank'); // Buka jendela baru untuk print
+
+    // CSS untuk pengaturan tampilan print
+    const style = `
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            th {
+                background-color: #add8e6; /* Warna biru muda untuk heading */
+                color: black;
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #000;
+            }
+            td {
+                padding: 10px;
+                border: 1px solid #000;
+                text-align: left;
+            }
+            .print-footer {
+                text-align: center;
+                margin-top: 20px;
+                font-style: italic;
+            }
+            @media print {
+                @page {
+                    size: auto;
+                    margin: 20mm;
+                }
+                table {
+                    page-break-inside: auto;
+                }
+                tr {
+                    page-break-inside: avoid;
+                    page-break-after: auto;
+                }
+                .no-print {
+                    display: none;
+                }
+            }
+        </style>
+    `;
+
+    // Menambahkan konten ke jendela baru
+    newWindow.document.write(`
+        <html>
+        <head>
+            <title>${pageTitle}</title>
+            ${style}
+        </head>
+        <body>
+            <h2>${pageTitle}</h2>
+            ${clonedTable.outerHTML}
+            <div class="print-footer">dibuat oleh aldi putra pratama</div>
+        </body>
+        </html>
+    `);
+
+    newWindow.document.close(); // Tutup dokumen agar bisa di-render
+    newWindow.print(); // Panggil fungsi print
+}
+
     </script>
 </body>
 
