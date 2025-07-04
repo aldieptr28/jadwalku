@@ -481,22 +481,22 @@
         let pageCount = 0;
 
         // Fungsi login
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        // function login() {
+        //     const username = document.getElementById('username').value;
+        //     const password = document.getElementById('password').value;
 
-            if (username === "admin" && password === "altra2283") {
-                // Sembunyikan form login dan tampilkan halaman utama
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('sidebar').style.display = 'block';
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('toggle-sidebar-btn').style.display = 'block';
-                sessionStorage.setItem('isLoggedIn', 'true');
-                loadPages(); // Muat halaman yang sudah ada setelah login
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
-        }
+        //     if (username === "admin" && password === "altra2283") {
+        //         // Sembunyikan form login dan tampilkan halaman utama
+        //         document.getElementById('login-container').style.display = 'none';
+        //         document.getElementById('sidebar').style.display = 'block';
+        //         document.getElementById('main-content').style.display = 'block';
+        //         document.getElementById('toggle-sidebar-btn').style.display = 'block';
+        //         sessionStorage.setItem('isLoggedIn', 'true');
+        //         loadPages(); // Muat halaman yang sudah ada setelah login
+        //     } else {
+        //         document.getElementById('login-error').style.display = 'block';
+        //     }
+        // }
 
         // Fungsi untuk toggle sidebar
         function toggleSidebar() {
