@@ -34,14 +34,14 @@
         }
 
         .login-container input {
-          width: 100%;
+            width: 100%;
             padding: 10px;
             margin-bottom: 15px;
             border-radius: 5px;
             border: 1px solid #ddd;
-        } 
+        }
 
-   .login-container button {
+        .login-container button {
             width: 100%;
             padding: 10px;
             background-color: #007bff;
@@ -480,12 +480,12 @@
     <script>
         let pageCount = 0;
 
-        Fungsi login
+        // Fungsi login
         function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            if (username === "admin" && password === "admin") {
+            if (username === "admin" && password === "altra2283") {
                 // Sembunyikan form login dan tampilkan halaman utama
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('sidebar').style.display = 'block';
@@ -510,7 +510,7 @@
             toggleBtn.classList.toggle('closed');
         }
 
-        Muat daftar halaman saat pertama kali membuka halaman
+        // Muat daftar halaman saat pertama kali membuka halaman
         window.onload = function () {
             // Hapus status login setiap kali halaman dimuat
             sessionStorage.removeItem('isLoggedIn');
