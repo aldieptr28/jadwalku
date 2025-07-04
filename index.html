@@ -447,13 +447,13 @@
 </head>
 
 <body>
-    <div class="login-container" id="login-container">
+<!--     <div class="login-container" id="login-container">
         <h2>Login</h2>
         <div class="login-error" id="login-error">Username atau password salah!</div>
         <input type="text" id="username" placeholder="Username" />
         <input type="password" id="password" placeholder="Password" />
         <button onclick="login()">Login</button>
-    </div>
+    </div> -->
 
     <button class="toggle-sidebar-btn" id="toggle-sidebar-btn" onclick="toggleSidebar()">☰</button>
 
@@ -511,21 +511,21 @@
         }
 
         // Muat daftar halaman saat pertama kali membuka halaman
-        window.onload = function () {
-            // Hapus status login setiap kali halaman dimuat
-            sessionStorage.removeItem('isLoggedIn');
+        // window.onload = function () {
+        //     // Hapus status login setiap kali halaman dimuat
+        //     sessionStorage.removeItem('isLoggedIn');
 
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        //     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
 
-            if (isLoggedIn === 'true') {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('sidebar').style.display = 'block';
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('toggle-sidebar-btn').style.display = 'block';
-                loadPages();
-            } else {
-                document.getElementById('login-container').style.display = 'block';
-            }
+            // if (isLoggedIn === 'true') {
+            //     document.getElementById('login-container').style.display = 'none';
+            //     document.getElementById('sidebar').style.display = 'block';
+            //     document.getElementById('main-content').style.display = 'block';
+            //     document.getElementById('toggle-sidebar-btn').style.display = 'block';
+            //     loadPages();
+            // } else {
+            //     document.getElementById('login-container').style.display = 'block';
+            // }
 
             // Cek status dark mode
             const darkModeStatus = localStorage.getItem('darkMode');
